@@ -7,7 +7,8 @@ import { TripHeader } from "./components/TripHeader";
 import { TripSummary } from "./components/TripSummary";
 import { BudgetSection } from "./components/BudgetSection";
 import { ProductsSection } from "./components/ProductsSection";
-import { RawDataPanel } from "./components/RawDataPanel";
+import { UploadSection } from "./components/UploadSection";
+import { AppPreview } from "./components/AppPreview";
 
 function App() {
   const { trip, loading, error } = useTrip("demo");
@@ -21,15 +22,39 @@ function App() {
   const resumo = getTripSummary(data);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <TripHeader tripId={trip.trip_id} clientName={clientName} />
-      <main className="grid grid-cols-[1fr_1fr_400px] gap-6 mt-6">
-        <div className="space-y-6">
-          <TripSummary resumo={resumo} />
-          <BudgetSection data={data} />
+    <div className="min-h-screen bg-gray-100">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-[1600px] mx-auto px-6 py-6">
+          <TripHeader tripId={trip.trip_id} clientName={clientName} />
         </div>
-        <ProductsSection data={data} />
-        <RawDataPanel data={data} />
+      </div>
+
+      {/* 3 Colunas */}
+      <main className="max-w-[1600px] mx-auto px-6 py-8">
+        <div className="grid grid-cols-[340px_1fr_420px] gap-6">
+
+          {/* COLUNA 1 - Upload */}
+          <div>
+            <UploadSection />
+          </div>
+
+          {/* COLUNA 2 - Revisão */}
+          <div className="space-y-6">
+            <h2 className="text-xl font-semibold text-[#09077D]">
+              2. Revise os dados extraídos pela IA
+            </h2>
+            <TripSummary resumo={resumo} />
+            <ProductsSection data={data} />
+            <BudgetSection data={data} />
+          </div>
+
+          {/* COLUNA 3 - Preview */}
+          <div>
+            <AppPreview />
+          </div>
+
+        </div>
       </main>
     </div>
   );
