@@ -1,6 +1,6 @@
-import { Trip } from '../types/trip';
+import { Trip } from "../types/trip";
 
-const API_BASE_URL = "https://api.dsctravel.com.br";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "https://api.dsctravel.com.br";
 
 export async function getTrip(tripId: string): Promise<Trip> {
   try {

@@ -21,10 +21,9 @@ function App() {
   const resumo = getTripSummary(data);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 font-sans">
+    <div className="min-h-screen bg-gray-100 p-6">
       <TripHeader tripId={trip.trip_id} clientName={clientName} />
-
-      <main className="grid grid-cols-[1fr_1fr_400px] gap-6">
+      <main className="grid grid-cols-[1fr_1fr_400px] gap-6 mt-6">
         <div className="space-y-6">
           <TripSummary resumo={resumo} />
           <BudgetSection data={data} />
