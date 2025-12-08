@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { Upload, FileText, Check, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { uploadFiles } from "../services/uploadService";
+import { extractTripData } from "../services/extractService";
 
 interface UploadedFile {
     id: number;
@@ -63,23 +64,24 @@ export function UploadSection({ onUploadSuccess }: UploadSectionProps) {
 
         try {
             const files = uploadedFiles.map((f) => f.file!).filter(Boolean);
-            const response = await uploadFiles(files);
+            const uploadResponse = await uploadFiles(files);
 
-            console.log("✅ Upload concluído! Trip ID:", response.trip_id);
+            console.log("✅ Upload concluído! Trip ID:", uploadResponse.trip_id);
 
-            // TODO: Após implementar extração com IA, descomentar linha abaixo
-            // if (onUploadSuccess) {
-            //   onUploadSuccess(response.trip_id);
-            // }
+            console.log("🤖 Iniciando extração com IA...");
+            const extractResponse = await extractTripData(uploadResponse.trip_id);
 
-            alert(
-                `✅ Arquivos enviados com sucesso!\n\nTrip ID: ${response.trip_id}\n\n(Próximo passo: extração com IA)`
-            );
+            console.log("✅ Extração concluída!", extractResponse);
+
+            if (onUploadSuccess) {
+                onUploadSuccess(uploadResponse.trip_id);
+            }
+
         } catch (err) {
             setError(
                 err instanceof Error
                     ? err.message
-                    : "Erro ao fazer upload"
+                    : "Erro ao processar arquivos"
             );
         } finally {
             setUploading(false);
@@ -97,7 +99,6 @@ export function UploadSection({ onUploadSuccess }: UploadSectionProps) {
                 </p>
             </CardHeader>
             <CardContent className="space-y-6">
-                {/* Drag & Drop Area */}
                 <div
                     onDrop={handleDrop}
                     onDragOver={handleDragOver}
@@ -130,7 +131,6 @@ export function UploadSection({ onUploadSuccess }: UploadSectionProps) {
                     className="hidden"
                 />
 
-                {/* Lista de Arquivos */}
                 {uploadedFiles.length > 0 && (
                     <div>
                         <h3 className="text-[15px] font-semibold text-[#09077D] mb-3">
@@ -160,7 +160,6 @@ export function UploadSection({ onUploadSuccess }: UploadSectionProps) {
                             ))}
                         </div>
 
-                        {/* Botão Upload */}
                         <button
                             onClick={handleUpload}
                             disabled={uploading}
@@ -178,7 +177,6 @@ export function UploadSection({ onUploadSuccess }: UploadSectionProps) {
                     </div>
                 )}
 
-                {/* Erro */}
                 {error && (
                     <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
                         {error}

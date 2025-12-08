@@ -29,7 +29,7 @@ function App() {
   const resumo = getTripSummary(data);
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div key={currentTripId} className="min-h-screen bg-gray-100">
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-[1600px] mx-auto px-6 py-6">
