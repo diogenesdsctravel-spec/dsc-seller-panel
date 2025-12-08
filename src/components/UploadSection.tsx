@@ -1,18 +1,90 @@
-import { useState } from "react";
-import { Upload, FileText, Check } from "lucide-react";
+import { useState, useRef } from "react";
+import { Upload, FileText, Check, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { uploadFiles } from "../services/uploadService";
 
 interface UploadedFile {
     id: number;
     name: string;
     size: string;
+    file?: File;
 }
 
-export function UploadSection() {
-    const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([
-        { id: 1, name: 'Roteiro_Peru_Kennedy.pdf', size: '2.4 MB' },
-        { id: 2, name: 'Hoteis_Lima_Cusco.pdf', size: '1.8 MB' }
-    ]);
+interface UploadSectionProps {
+    onUploadSuccess?: (tripId: string) => void;
+}
+
+export function UploadSection({ onUploadSuccess }: UploadSectionProps) {
+    const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+    const [uploading, setUploading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const formatFileSize = (bytes: number): string => {
+        if (bytes === 0) return "0 Bytes";
+        const k = 1024;
+        const sizes = ["Bytes", "KB", "MB", "GB"];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return (
+            Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i]
+        );
+    };
+
+    const handleFileSelect = (files: FileList | null) => {
+        if (!files) return;
+
+        const newFiles: UploadedFile[] = Array.from(files).map(
+            (file, index) => ({
+                id: Date.now() + index,
+                name: file.name,
+                size: formatFileSize(file.size),
+                file: file,
+            })
+        );
+
+        setUploadedFiles((prev) => [...prev, ...newFiles]);
+        setError(null);
+    };
+
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        handleFileSelect(e.dataTransfer.files);
+    };
+
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+    };
+
+    const handleUpload = async () => {
+        if (uploadedFiles.length === 0) return;
+
+        setUploading(true);
+        setError(null);
+
+        try {
+            const files = uploadedFiles.map((f) => f.file!).filter(Boolean);
+            const response = await uploadFiles(files);
+
+            console.log("✅ Upload concluído! Trip ID:", response.trip_id);
+
+            // TODO: Após implementar extração com IA, descomentar linha abaixo
+            // if (onUploadSuccess) {
+            //   onUploadSuccess(response.trip_id);
+            // }
+
+            alert(
+                `✅ Arquivos enviados com sucesso!\n\nTrip ID: ${response.trip_id}\n\n(Próximo passo: extração com IA)`
+            );
+        } catch (err) {
+            setError(
+                err instanceof Error
+                    ? err.message
+                    : "Erro ao fazer upload"
+            );
+        } finally {
+            setUploading(false);
+        }
+    };
 
     return (
         <Card className="shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
@@ -26,7 +98,12 @@ export function UploadSection() {
             </CardHeader>
             <CardContent className="space-y-6">
                 {/* Drag & Drop Area */}
-                <div className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center hover:border-[#50CFAD] hover:bg-[#50CFAD]/5 transition-all duration-300 cursor-pointer">
+                <div
+                    onDrop={handleDrop}
+                    onDragOver={handleDragOver}
+                    onClick={() => fileInputRef.current?.click()}
+                    className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center hover:border-[#50CFAD] hover:bg-[#50CFAD]/5 transition-all duration-300 cursor-pointer"
+                >
                     <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
                         <Upload className="w-8 h-8 text-[#09077D]" />
                     </div>
@@ -36,16 +113,28 @@ export function UploadSection() {
                     <p className="text-[13px] text-gray-500 mb-4">
                         ou clique para selecionar
                     </p>
-                    <button className="px-6 py-2 bg-[#09077D] text-white rounded-xl text-sm font-medium hover:scale-105 transition-transform">
+                    <button
+                        type="button"
+                        className="px-6 py-2 bg-[#09077D] text-white rounded-xl text-sm font-medium hover:scale-105 transition-transform"
+                    >
                         Selecionar arquivos
                     </button>
                 </div>
 
-                {/* Lista de Arquivos Enviados */}
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => handleFileSelect(e.target.files)}
+                    className="hidden"
+                />
+
+                {/* Lista de Arquivos */}
                 {uploadedFiles.length > 0 && (
                     <div>
                         <h3 className="text-[15px] font-semibold text-[#09077D] mb-3">
-                            Arquivos enviados ({uploadedFiles.length})
+                            Arquivos selecionados ({uploadedFiles.length})
                         </h3>
                         <div className="space-y-2">
                             {uploadedFiles.map((file) => (
@@ -70,6 +159,29 @@ export function UploadSection() {
                                 </div>
                             ))}
                         </div>
+
+                        {/* Botão Upload */}
+                        <button
+                            onClick={handleUpload}
+                            disabled={uploading}
+                            className="w-full mt-4 px-6 py-3 bg-[#09077D] text-white rounded-xl text-sm font-medium hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        >
+                            {uploading ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    Enviando...
+                                </>
+                            ) : (
+                                "Processar com IA"
+                            )}
+                        </button>
+                    </div>
+                )}
+
+                {/* Erro */}
+                {error && (
+                    <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+                        {error}
                     </div>
                 )}
             </CardContent>

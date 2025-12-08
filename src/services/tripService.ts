@@ -2,6 +2,8 @@ import { Trip } from "../types/trip";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "https://api.dsctravel.com.br";
 
+console.log("API_BASE_URL (runtime):", API_BASE_URL);
+
 export async function getTrip(tripId: string): Promise<Trip> {
   try {
     const response = await fetch(`${API_BASE_URL}/trips/${tripId}`);

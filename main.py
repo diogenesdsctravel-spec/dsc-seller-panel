@@ -1,12 +1,17 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
-from datetime import datetime
 import json
-from typing import Any, Dict
+import uuid
+from typing import Any, Dict, List
 from pydantic import BaseModel
+import shutil
 
-app = FastAPI()
+app = FastAPI(
+    title="DSC Travel API",
+    description="API para gerenciamento de viagens e extrações",
+    version="0.1.0"
+)
 
 # CORS para frontends conhecidos
 app.add_middleware(
@@ -23,61 +28,35 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-BASE_DIR = Path(__file__).resolve().parent
+# Paths
+BASE_DIR = Path(__file__).resolve().parent.parent
 EXTRACAO_PATH = BASE_DIR / "extracao" / "extracao_simulada.json"
+UPLOADS_DIR = BASE_DIR / "uploads"
+EXTRACAO_DIR = BASE_DIR / "extracao"
+
+# Criar diretórios se não existirem
+UPLOADS_DIR.mkdir(exist_ok=True)
+EXTRACAO_DIR.mkdir(exist_ok=True)
 
 
+# Models
 class TripResponse(BaseModel):
     trip_id: str
     status: str
     data: Dict[str, Any]
 
 
-# Modelos do /trips/simulate (contrato v1)
-class TripSimulationRequest(BaseModel):
-    cliente: Dict[str, Any] | None = None
-    origem: str
-    destino: str
-    data_ida: str
-    data_volta: str
-    flexibilidade_datas: bool | None = None
-    classe: str | None = None
-    observacoes: str | None = None
-
-
-class TripResumo(BaseModel):
-    destino: str
-    dias: int
-    tipo: str
-
-
-class TripSimulationDetailAereo(BaseModel):
-    companhia: str
-    classe: str
-    preco_estimado: float
-
-
-class TripSimulationDetailHospedagem(BaseModel):
-    tipo: str
-    noites: int
-    preco_estimado: float
-
-
-class TripSimulationData(BaseModel):
-    aereo: TripSimulationDetailAereo
-    hospedagem: TripSimulationDetailHospedagem
-
-
-class TripSimulationResponse(BaseModel):
+class UploadResponse(BaseModel):
     trip_id: str
     status: str
-    resumo: TripResumo
-    simulacao: TripSimulationData
+    message: str
+    files: List[str]
 
 
+# Endpoints
 @app.get("/")
 def root():
-    return {"message": "DSC Seller API - Online", "status": "ok"}
+    return {"message": "DSC Seller API - Online", "status": "ok", "version": "0.1.0"}
 
 
 @app.get("/ping")
@@ -85,8 +64,48 @@ def ping():
     return {"status": "ok", "message": "mini-sistema-dsc online"}
 
 
+@app.post("/upload", response_model=UploadResponse)
+async def upload_files(files: List[UploadFile] = File(...)):
+    """
+    Upload de arquivos de viagem (PDFs, imagens).
+    
+    Returns:
+        trip_id único e lista de arquivos salvos
+    """
+    # Gerar ID único para a viagem
+    trip_id = f"trip_{uuid.uuid4().hex[:12]}"
+    trip_folder = UPLOADS_DIR / trip_id
+    trip_folder.mkdir(exist_ok=True)
+    
+    saved_files = []
+    
+    try:
+        # Salvar cada arquivo
+        for file in files:
+            file_path = trip_folder / file.filename
+            with file_path.open("wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+            saved_files.append(file.filename)
+        
+        return UploadResponse(
+            trip_id=trip_id,
+            status="uploaded",
+            message=f"{len(saved_files)} arquivo(s) enviado(s) com sucesso",
+            files=saved_files
+        )
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao fazer upload: {str(e)}")
+
+
 @app.get("/trips/{trip_id}", response_model=TripResponse)
 def get_trip(trip_id: str):
+    """
+    Obter dados de uma viagem.
+    
+    Se trip_id = "demo", retorna dados simulados.
+    Caso contrário, busca dados extraídos.
+    """
     if trip_id == "demo":
         try:
             with open(EXTRACAO_PATH, "r", encoding="utf-8") as f:
@@ -96,56 +115,24 @@ def get_trip(trip_id: str):
             raise HTTPException(status_code=404, detail="Arquivo de extração não encontrado")
         except json.JSONDecodeError:
             raise HTTPException(status_code=500, detail="Erro ao ler arquivo JSON")
-
-    return TripResponse(
-        trip_id=trip_id,
-        status="stub",
-        data={"message": f"Trip {trip_id} não implementado ainda"}
-    )
-
-
-def _calcular_dias(data_ida: str, data_volta: str) -> int:
+    
+    # Buscar dados extraídos para trip_id real
+    extracao_file = EXTRACAO_DIR / f"{trip_id}.json"
+    
+    if not extracao_file.exists():
+        raise HTTPException(
+            status_code=404,
+            detail=f"Viagem {trip_id} não encontrada. Faça a extração primeiro."
+        )
+    
     try:
-        d1 = datetime.fromisoformat(data_ida)
-        d2 = datetime.fromisoformat(data_volta)
-        return max((d2 - d1).days, 0)
-    except Exception:
-        return 0
+        with open(extracao_file, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return TripResponse(trip_id=trip_id, status="ok", data=data)
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=500, detail="Erro ao ler dados da viagem")
 
 
-@app.post("/trips/simulate", response_model=TripSimulationResponse)
-def simulate_trip(payload: TripSimulationRequest):
-    dias = _calcular_dias(payload.data_ida, payload.data_volta)
-    tipo = "Internacional" if payload.destino not in {"GIG", "GRU", "CNF", "SSA"} else "Nacional"
-
-    trip_id = f"sim_{payload.origem.lower()}_{payload.destino.lower()}"
-
-    aereo = TripSimulationDetailAereo(
-        companhia="Companhia Demo",
-        classe=(payload.classe or "economica").capitalize(),
-        preco_estimado=4200.0,
-    )
-
-    hospedagem = TripSimulationDetailHospedagem(
-        tipo="Hotel 4 estrelas",
-        noites=dias if dias > 0 else 5,
-        preco_estimado=3800.0,
-    )
-
-    resumo = TripResumo(
-        destino=payload.destino,
-        dias=dias if dias > 0 else 5,
-        tipo=tipo,
-    )
-
-    simulacao = TripSimulationData(
-        aereo=aereo,
-        hospedagem=hospedagem,
-    )
-
-    return TripSimulationResponse(
-        trip_id=trip_id,
-        status="simulated",
-        resumo=resumo,
-        simulacao=simulacao,
-    )
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useTrip } from "./hooks/useTrip";
 import { getClientName, getTripSummary } from "./utils/formatters";
 import { LoadingState } from "./components/LoadingState";
@@ -11,7 +12,13 @@ import { UploadSection } from "./components/UploadSection";
 import { AppPreview } from "./components/AppPreview";
 
 function App() {
-  const { trip, loading, error } = useTrip("demo");
+  const [currentTripId, setCurrentTripId] = useState<string>("demo");
+  const { trip, loading, error } = useTrip(currentTripId);
+
+  const handleUploadSuccess = (tripId: string) => {
+    console.log("Upload sucesso! Trip ID:", tripId);
+    setCurrentTripId(tripId);
+  };
 
   if (loading) return <LoadingState />;
   if (error) return <ErrorState error={error} />;
@@ -36,7 +43,7 @@ function App() {
 
           {/* COLUNA 1 - Upload */}
           <div>
-            <UploadSection />
+            <UploadSection onUploadSuccess={handleUploadSuccess} />
           </div>
 
           {/* COLUNA 2 - Revisão */}
