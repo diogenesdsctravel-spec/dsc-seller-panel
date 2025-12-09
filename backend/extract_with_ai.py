@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 from openai import OpenAI
 import PyPDF2
+from get_destination_image import get_hero_image_for_trip
 
 def read_pdf_text(pdf_path: Path) -> str:
     """Extrai texto de um arquivo PDF."""
@@ -17,6 +18,38 @@ def read_pdf_text(pdf_path: Path) -> str:
         print(f"Erro ao ler PDF {pdf_path}: {e}")
         return ""
 
+def extract_destinations_from_data(data: dict) -> list[str]:
+    """
+    Extrai lista de destinos dos dados da viagem.
+    
+    Args:
+        data: Dados estruturados da viagem
+        
+    Returns:
+        Lista de cidades/destinos
+    """
+    destinations = []
+    
+    # Extrair de voos (destinos)
+    if "voos" in data and isinstance(data["voos"], list):
+        for voo in data["voos"]:
+            if "destino" in voo:
+                # Remove código do aeroporto (ex: "Lima (LIM)" -> "Lima")
+                city = voo["destino"].split("(")[0].strip()
+                if city and city not in destinations:
+                    destinations.append(city)
+    
+    # Extrair de hotéis
+    if "hoteis" in data and isinstance(data["hoteis"], list):
+        for hotel in data["hoteis"]:
+            if "cidade" in hotel:
+                city = hotel["cidade"].strip()
+                if city and city not in destinations:
+                    destinations.append(city)
+    
+    print(f"🗺️ Destinos identificados: {', '.join(destinations) if destinations else 'Nenhum'}")
+    return destinations
+
 def extract_travel_data(trip_folder: Path) -> dict:
     """
     Extrai dados de viagem dos arquivos usando OpenAI.
@@ -25,7 +58,7 @@ def extract_travel_data(trip_folder: Path) -> dict:
         trip_folder: Pasta com os arquivos enviados
         
     Returns:
-        Dados estruturados da viagem
+        Dados estruturados da viagem (com imagem do destino)
     """
     
     api_key = os.getenv("OPENAI_API_KEY")
@@ -122,6 +155,17 @@ FORMATO JSON (retorne APENAS JSON, sem texto adicional):
         extracted_data = json.loads(result_text)
         
         print(f"✅ Extração bem-sucedida de {len(files_content)} arquivo(s)")
+        
+        # 🆕 NOVA FUNCIONALIDADE: Buscar imagem do destino
+        destinations = extract_destinations_from_data(extracted_data)
+        if destinations:
+            print(f"🖼️ Buscando imagem para destinos: {destinations}")
+            hero_image = get_hero_image_for_trip(destinations)
+            extracted_data["imagem_hero"] = hero_image
+            print(f"✅ Imagem adicionada: {hero_image[:80]}...")
+        else:
+            print("⚠️ Nenhum destino identificado, imagem não adicionada")
+        
         return extracted_data
         
     except Exception as e:
@@ -131,7 +175,7 @@ FORMATO JSON (retorne APENAS JSON, sem texto adicional):
 
 def get_mock_data() -> dict:
     """Retorna dados simulados caso a extração falhe."""
-    return {
+    mock_data = {
         "cliente": "Cliente (dados simulados)",
         "periodo": {
             "inicio": "15/02",
@@ -168,3 +212,10 @@ def get_mock_data() -> dict:
             "valor": 6656
         }
     }
+    
+    # Adicionar imagem mesmo nos dados simulados
+    destinations = extract_destinations_from_data(mock_data)
+    if destinations:
+        mock_data["imagem_hero"] = get_hero_image_for_trip(destinations)
+    
+    return mock_data
