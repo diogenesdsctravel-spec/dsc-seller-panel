@@ -56,7 +56,7 @@ function App() {
             <h2 className="text-xl font-semibold text-[#09077D]">
               2. Revise os dados extraídos pela IA
             </h2>
-            <TripSummaryResumo resumo={resumo} />
+            <TripSummary resumo={resumo} />
             <ProductsSection data={data} />
             <BudgetSection data={data} />
           </div>
