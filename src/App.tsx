@@ -25,6 +25,11 @@ function App() {
   if (error) return <ErrorState error={error} />;
   if (!trip) return <EmptyState />;
 
+  // Evita renderizar com dados antigos enquanto troca de trip
+  if (currentTripId !== "demo" && currentTripId !== trip.trip_id) {
+    return <LoadingState />;
+  }
+
   const data = trip.data || {};
   const clientName = getClientName(data);
   const resumo = getTripSummary(data);
