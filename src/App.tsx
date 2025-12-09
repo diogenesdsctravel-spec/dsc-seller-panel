@@ -58,7 +58,7 @@ function App() {
 
           {/* COLUNA 3 - Preview */}
           <div>
-            <AppPreview />
+            <AppPreview tripData={data} />
           </div>
 
         </div>

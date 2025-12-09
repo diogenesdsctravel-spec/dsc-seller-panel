@@ -2,10 +2,91 @@ import { useState } from "react";
 import { Smartphone } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
-type PreviewScreen = 'hero' | 'roteiro' | 'voos' | 'hoteis' | 'orcamento';
+type PreviewScreen = "hero" | "roteiro" | "voos" | "hoteis" | "orcamento";
 
-export function AppPreview() {
-    const [previewScreen, setPreviewScreen] = useState<PreviewScreen>('hero');
+interface AppPreviewProps {
+    tripData?: any;
+}
+
+export function AppPreview({ tripData }: AppPreviewProps) {
+    const [previewScreen, setPreviewScreen] = useState<PreviewScreen>("hero");
+
+    // Fallbacks + dados reais
+    const cliente: string = tripData?.cliente || "Cliente";
+
+    const destinoPrincipal: string =
+        tripData?.destinoPrincipal || tripData?.destino || "Peru";
+
+    const cidadesLinha: string =
+        Array.isArray(tripData?.cidades) && tripData.cidades.length > 0
+            ? tripData.cidades.join(" • ")
+            : "Lima • Cusco • Machu Picchu";
+
+    const diasNoitesResumo: string =
+        tripData?.resumoDuracao || tripData?.duracao || "8 dias • 7 noites";
+
+    const roteiroItems =
+        Array.isArray(tripData?.roteiro) && tripData.roteiro.length > 0
+            ? tripData.roteiro
+            : [
+                "15/02 — Chegada a Lima",
+                "16/02 — Centro Histórico",
+                "17/02 — Barranco",
+                "18/02 — Voo para Cusco",
+                "19/02 — City Tour",
+                "20/02 — Vale Sagrado",
+                "21/02 — Machu Picchu",
+                "22/02 — Retorno",
+            ];
+
+    const voos =
+        Array.isArray(tripData?.voos) && tripData.voos.length > 0
+            ? tripData.voos
+            : [
+                { rota: "GRU → LIM", data: "15/02 • 09:15" },
+                { rota: "LIM → CUZ", data: "18/02 • 17:55" },
+                { rota: "CUZ → LIM", data: "22/02 • 12:10" },
+                { rota: "LIM → GRU", data: "22/02 • 21:35" },
+            ];
+
+    const hoteis =
+        Array.isArray(tripData?.hoteis) && tripData.hoteis.length > 0
+            ? tripData.hoteis
+            : [
+                {
+                    nome: "Costa del Sol",
+                    cidade: "Lima",
+                    checkin: "15/02",
+                    checkout: "18/02",
+                    noites: 3,
+                    nota: "8,4",
+                    origemNota: "Booking",
+                },
+                {
+                    nome: "Tierra Viva",
+                    cidade: "Cusco",
+                    checkin: "18/02",
+                    checkout: "22/02",
+                    noites: 4,
+                    nota: "8,8",
+                    origemNota: "Booking",
+                },
+            ];
+
+    const orcamentoPrincipal = tripData?.orcamento?.pacotePrincipal || {
+        titulo: "Pacote Aéreo + Hotel",
+        valor: "R$ 6.656",
+        descricao: "✓ Voos • ✓ Hotéis",
+    };
+
+    const orcamentoOpcionais =
+        Array.isArray(tripData?.orcamento?.opcionais) &&
+            tripData.orcamento.opcionais.length > 0
+            ? tripData.orcamento.opcionais
+            : [
+                { titulo: "Transfers", valor: "R$ 119,50" },
+                { titulo: "Passeios", valor: "R$ 2.325" },
+            ];
 
     return (
         <Card className="shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
@@ -22,18 +103,18 @@ export function AppPreview() {
                 {/* Tabs */}
                 <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
                     {[
-                        { id: 'hero', label: 'Boas-vindas' },
-                        { id: 'roteiro', label: 'Roteiro' },
-                        { id: 'voos', label: 'Voos' },
-                        { id: 'hoteis', label: 'Hotéis' },
-                        { id: 'orcamento', label: 'Orçamento' }
+                        { id: "hero", label: "Boas-vindas" },
+                        { id: "roteiro", label: "Roteiro" },
+                        { id: "voos", label: "Voos" },
+                        { id: "hoteis", label: "Hotéis" },
+                        { id: "orcamento", label: "Orçamento" },
                     ].map((tab) => (
                         <button
                             key={tab.id}
                             onClick={() => setPreviewScreen(tab.id as PreviewScreen)}
                             className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${previewScreen === tab.id
-                                    ? 'bg-[#09077D] text-white'
-                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                    ? "bg-[#09077D] text-white"
+                                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                                 }`}
                         >
                             {tab.label}
@@ -53,11 +134,12 @@ export function AppPreview() {
 
                                 {/* Content */}
                                 <div className="h-full overflow-y-auto">
-                                    {previewScreen === 'hero' && (
+                                    {previewScreen === "hero" && (
                                         <div className="relative h-full">
                                             <div className="h-[240px] bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
                                                 <p className="text-white text-[20px] font-semibold px-6 text-center">
-                                                    Kennedy, prepare-se para viver o Peru.
+                                                    {cliente}, prepare-se para viver{" "}
+                                                    {hoteis[0]?.cidade || "sua viagem"}.
                                                 </p>
                                             </div>
                                             <div className="p-4">
@@ -66,117 +148,194 @@ export function AppPreview() {
                                                 </p>
                                                 <div className="bg-white rounded-xl p-3 mb-2 shadow-sm border border-gray-100">
                                                     <p className="text-[11px] text-[#09077D] font-medium">
-                                                        📍 Lima • Cusco • Machu Picchu
+                                                        📍{" "}
+                                                        {hoteis
+                                                            .map((h: any) => h.cidade)
+                                                            .filter(Boolean)
+                                                            .join(" • ") || "Destinos"}
                                                     </p>
                                                 </div>
                                                 <div className="bg-white rounded-xl p-3 shadow-sm border border-gray-100">
                                                     <p className="text-[11px] text-[#09077D] font-medium">
-                                                        🗓️ 8 dias • 7 noites
+                                                        🗓️ {tripData?.periodo?.inicio || "Data"} -{" "}
+                                                        {tripData?.periodo?.fim || "Data"}
                                                     </p>
                                                 </div>
                                             </div>
                                         </div>
                                     )}
 
-                                    {previewScreen === 'roteiro' && (
+                                    {previewScreen === "roteiro" && (
                                         <div className="p-4 pt-12">
                                             <h2 className="text-[18px] font-semibold text-[#09077D] mb-3">
                                                 Roteiro
                                             </h2>
                                             <div className="space-y-2">
-                                                {['15/02 — Chegada a Lima', '16/02 — Centro Histórico', '17/02 — Barranco', '18/02 — Voo para Cusco', '19/02 — City Tour', '20/02 — Vale Sagrado', '21/02 — Machu Picchu', '22/02 — Retorno'].map((dia, i) => (
-                                                    <div key={i} className="bg-white rounded-lg p-3 shadow-sm border border-gray-100">
-                                                        <p className="text-[11px] font-medium text-[#09077D]">
-                                                            Dia {i + 1}
-                                                        </p>
-                                                        <p className="text-[10px] text-gray-600 mt-0.5">
-                                                            {dia}
-                                                        </p>
-                                                    </div>
-                                                ))}
+                                                {roteiroItems.map((dia: any, i: number) => {
+                                                    const tituloDia =
+                                                        typeof dia === "string"
+                                                            ? dia
+                                                            : dia?.titulo || dia?.resumo || "";
+                                                    const descricaoDia =
+                                                        typeof dia === "string"
+                                                            ? ""
+                                                            : dia?.descricao || dia?.detalhes || "";
+
+                                                    return (
+                                                        <div
+                                                            key={i}
+                                                            className="bg-white rounded-lg p-3 shadow-sm border border-gray-100"
+                                                        >
+                                                            <p className="text-[11px] font-medium text-[#09077D]">
+                                                                Dia {i + 1}
+                                                            </p>
+                                                            <p className="text-[10px] text-gray-600 mt-0.5">
+                                                                {tituloDia}
+                                                            </p>
+                                                            {descricaoDia && (
+                                                                <p className="text-[10px] text-gray-500 mt-0.5">
+                                                                    {descricaoDia}
+                                                                </p>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
                                         </div>
                                     )}
 
-                                    {previewScreen === 'voos' && (
+                                    {previewScreen === "voos" && (
                                         <div className="p-4 pt-12">
                                             <h2 className="text-[18px] font-semibold text-[#09077D] mb-3">
                                                 Voos
                                             </h2>
                                             <div className="space-y-2">
-                                                {[
-                                                    { rota: 'GRU → LIM', data: '15/02 • 09:15' },
-                                                    { rota: 'LIM → CUZ', data: '18/02 • 17:55' },
-                                                    { rota: 'CUZ → LIM', data: '22/02 • 12:10' },
-                                                    { rota: 'LIM → GRU', data: '22/02 • 21:35' }
-                                                ].map((voo, i) => (
-                                                    <div key={i} className="bg-white rounded-lg p-3 shadow-sm border border-gray-100">
-                                                        <p className="text-[11px] font-medium text-[#09077D]">{voo.rota}</p>
-                                                        <p className="text-[10px] text-gray-600">{voo.data}</p>
-                                                    </div>
-                                                ))}
+                                                {voos.map((voo: any, i: number) => {
+                                                    const rota =
+                                                        voo?.rota ||
+                                                        (voo?.origem && voo?.destino
+                                                            ? `${voo.origem} → ${voo.destino}`
+                                                            : "Voo");
+                                                    const dataLinha =
+                                                        voo?.data ||
+                                                        voo?.dataHorario ||
+                                                        [voo?.dataPartida, voo?.horarioPartida]
+                                                            .filter(Boolean)
+                                                            .join(" • ");
+
+                                                    return (
+                                                        <div
+                                                            key={i}
+                                                            className="bg-white rounded-lg p-3 shadow-sm border border-gray-100"
+                                                        >
+                                                            <p className="text-[11px] font-medium text-[#09077D]">
+                                                                {rota}
+                                                            </p>
+                                                            {dataLinha && (
+                                                                <p className="text-[10px] text-gray-600">
+                                                                    {dataLinha}
+                                                                </p>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
                                         </div>
                                     )}
 
-                                    {previewScreen === 'hoteis' && (
+                                    {previewScreen === "hoteis" && (
                                         <div className="p-4 pt-12">
                                             <h2 className="text-[18px] font-semibold text-[#09077D] mb-3">
                                                 Hotéis
                                             </h2>
                                             <div className="space-y-3">
-                                                <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100">
-                                                    <div className="h-[80px] bg-gradient-to-br from-gray-300 to-gray-200" />
-                                                    <div className="p-3">
-                                                        <p className="text-[11px] font-medium text-[#09077D] mb-1">
-                                                            Costa del Sol — Lima
-                                                        </p>
-                                                        <p className="text-[10px] text-gray-600">
-                                                            15-18/02 • 3 noites<br />
-                                                            ⭐ 8,4 (Booking)
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                                <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100">
-                                                    <div className="h-[80px] bg-gradient-to-br from-gray-300 to-gray-200" />
-                                                    <div className="p-3">
-                                                        <p className="text-[11px] font-medium text-[#09077D] mb-1">
-                                                            Tierra Viva — Cusco
-                                                        </p>
-                                                        <p className="text-[10px] text-gray-600">
-                                                            18-22/02 • 4 noites<br />
-                                                            ⭐ 8,8 (Booking)
-                                                        </p>
-                                                    </div>
-                                                </div>
+                                                {hoteis.map((hotel: any, i: number) => {
+                                                    const nome =
+                                                        hotel?.nome ||
+                                                        hotel?.hotel ||
+                                                        `${hotel?.nomeHotel || ""}`;
+                                                    const cidade = hotel?.cidade || hotel?.local || "";
+                                                    const checkin = hotel?.checkin || hotel?.inicio || "";
+                                                    const checkout =
+                                                        hotel?.checkout || hotel?.fim || "";
+                                                    const noites =
+                                                        hotel?.noites ??
+                                                        hotel?.qtdeNoites ??
+                                                        hotel?.noitesTotal;
+                                                    const nota = hotel?.nota || hotel?.score;
+                                                    const origemNota =
+                                                        hotel?.origemNota || hotel?.fonteNota || "Booking";
+
+                                                    const periodo =
+                                                        checkin && checkout
+                                                            ? `${checkin} - ${checkout}`
+                                                            : "";
+
+                                                    return (
+                                                        <div
+                                                            key={i}
+                                                            className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100"
+                                                        >
+                                                            <div className="h-[80px] bg-gradient-to-br from-gray-300 to-gray-200" />
+                                                            <div className="p-3">
+                                                                <p className="text-[11px] font-medium text-[#09077D] mb-1">
+                                                                    {nome}
+                                                                    {cidade ? ` — ${cidade}` : ""}
+                                                                </p>
+                                                                <p className="text-[10px] text-gray-600">
+                                                                    {periodo && `${periodo} • `}
+                                                                    {noites && `${noites} noites`}
+                                                                    <br />
+                                                                    {nota && (
+                                                                        <>
+                                                                            ⭐ {nota} ({origemNota})
+                                                                        </>
+                                                                    )}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
                                         </div>
                                     )}
 
-                                    {previewScreen === 'orcamento' && (
+                                    {previewScreen === "orcamento" && (
                                         <div className="p-4 pt-12">
                                             <h2 className="text-[18px] font-semibold text-[#09077D] mb-3">
                                                 Orçamento
                                             </h2>
                                             <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-3">
-                                                <p className="text-[10px] text-gray-600 mb-1">Pacote Aéreo + Hotel</p>
+                                                <p className="text-[10px] text-gray-600 mb-1">
+                                                    {orcamentoPrincipal.titulo ||
+                                                        "Pacote Aéreo + Hotel"}
+                                                </p>
                                                 <p className="text-[20px] font-semibold text-[#09077D]">
-                                                    R$ 6.656
+                                                    {orcamentoPrincipal.valor || "R$ 0,00"}
                                                 </p>
-                                                <p className="text-[10px] text-gray-600 mt-2">
-                                                    ✓ Voos • ✓ Hotéis
-                                                </p>
+                                                {orcamentoPrincipal.descricao && (
+                                                    <p className="text-[10px] text-gray-600 mt-2">
+                                                        {orcamentoPrincipal.descricao}
+                                                    </p>
+                                                )}
                                             </div>
-                                            <p className="text-[12px] font-medium text-[#09077D] mb-2">Opcionais</p>
+                                            <p className="text-[12px] font-medium text-[#09077D] mb-2">
+                                                Opcionais
+                                            </p>
                                             <div className="space-y-1.5">
-                                                <div className="flex justify-between text-[10px]">
-                                                    <span className="text-gray-600">Transfers</span>
-                                                    <span className="text-[#09077D] font-medium">R$ 119,50</span>
-                                                </div>
-                                                <div className="flex justify-between text-[10px]">
-                                                    <span className="text-gray-600">Passeios</span>
-                                                    <span className="text-[#09077D] font-medium">R$ 2.325</span>
-                                                </div>
+                                                {orcamentoOpcionais.map((opt: any, i: number) => (
+                                                    <div
+                                                        key={i}
+                                                        className="flex justify-between text-[10px]"
+                                                    >
+                                                        <span className="text-gray-600">
+                                                            {opt.titulo || opt.nome || "Opcional"}
+                                                        </span>
+                                                        <span className="text-[#09077D] font-medium">
+                                                            {opt.valor || "R$ 0,00"}
+                                                        </span>
+                                                    </div>
+                                                ))}
                                             </div>
                                         </div>
                                     )}
