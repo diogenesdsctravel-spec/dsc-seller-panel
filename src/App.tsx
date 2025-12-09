@@ -1,3 +1,4 @@
+// Build: 2025-12-09 v2
 import { useState } from "react";
 import { useTrip } from "./hooks/useTrip";
 import { getClientName, getTripSummary } from "./utils/formatters";
