@@ -13,9 +13,10 @@ interface UploadedFile {
 
 interface UploadSectionProps {
     onUploadSuccess?: (tripId: string) => void;
+    onRefetch?: () => void;
 }
 
-export function UploadSection({ onUploadSuccess }: UploadSectionProps) {
+export function UploadSection({ onUploadSuccess, onRefetch }: UploadSectionProps) {
     const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -76,6 +77,12 @@ export function UploadSection({ onUploadSuccess }: UploadSectionProps) {
             if (onUploadSuccess) {
                 onUploadSuccess(uploadResponse.trip_id);
             }
+
+            setTimeout(() => {
+                if (onRefetch) {
+                    onRefetch();
+                }
+            }, 1000);
 
         } catch (err) {
             setError(

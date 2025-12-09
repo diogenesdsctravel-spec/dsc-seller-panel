@@ -13,7 +13,7 @@ import { AppPreview } from "./components/AppPreview";
 
 function App() {
   const [currentTripId, setCurrentTripId] = useState<string>("demo");
-  const { trip, loading, error } = useTrip(currentTripId);
+  const { trip, loading, error, refetch } = useTrip(currentTripId);
 
   const handleUploadSuccess = (tripId: string) => {
     console.log("Upload sucesso! Trip ID:", tripId);
@@ -43,7 +43,7 @@ function App() {
 
           {/* COLUNA 1 - Upload */}
           <div>
-            <UploadSection onUploadSuccess={handleUploadSuccess} />
+            <UploadSection onUploadSuccess={handleUploadSuccess} onRefetch={refetch} />
           </div>
 
           {/* COLUNA 2 - Revisão */}
