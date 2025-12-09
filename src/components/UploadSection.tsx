@@ -13,10 +13,9 @@ interface UploadedFile {
 
 interface UploadSectionProps {
     onUploadSuccess?: (tripId: string) => void;
-    onRefetch?: () => void;
 }
 
-export function UploadSection({ onUploadSuccess, onRefetch }: UploadSectionProps) {
+export function UploadSection({ onUploadSuccess }: UploadSectionProps) {
     const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -74,16 +73,11 @@ export function UploadSection({ onUploadSuccess, onRefetch }: UploadSectionProps
 
             console.log("✅ Extração concluída!", extractResponse);
 
+            // Chamar callback que atualiza o currentTripId no App
+            // O useTrip vai automaticamente buscar os novos dados via useEffect
             if (onUploadSuccess) {
                 onUploadSuccess(uploadResponse.trip_id);
             }
-
-            setTimeout(() => {
-                console.log("🔄 Refetching data...");
-                if (onRefetch) {
-                    onRefetch();
-                }
-            }, 2000);
 
         } catch (err) {
             setError(
