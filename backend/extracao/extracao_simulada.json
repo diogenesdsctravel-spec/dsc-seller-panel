@@ -1,37 +1,15 @@
 {
-    "cliente": "Kennedy",
-    "periodo": {
-        "inicio": "15/02",
-        "fim": "22/02"
-    },
-    "voos": [
-        {
-            "origem": "São Paulo (GRU)",
-            "destino": "Lima (LIM)",
-            "data": "15/02",
-            "horario_saida": "06:10",
-            "horario_chegada": "09:15"
-        }
-    ],
-    "hoteis": [
-        {
-            "cidade": "Lima",
-            "nome": "NAIA Miraflores Lima",
-            "noites": 3,
-            "checkin": "15/02",
-            "checkout": "18/02",
-            "regime": "Sem alimentação"
-        }
-    ],
-    "passeios": [
-        {
-            "nome": "City Tour em Cusco",
-            "valor_por_pessoa": 64,
-            "incluido": false
-        }
-    ],
-    "pacote_base": {
-        "descricao": "Aéreo + Hotel (casal)",
-        "valor": 6656
-    }
+  "trip_id": "demo",
+  "cliente": "Viajante Demo",
+  "periodo": {
+    "inicio": "15/02",
+    "fim": "22/02"
+  },
+  "voos": [],
+  "hoteis": [],
+  "passeios": [],
+  "pacote_base": {
+    "descricao": "Pacote demo",
+    "valor": 0
+  }
 }

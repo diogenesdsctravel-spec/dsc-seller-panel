@@ -136,8 +136,19 @@ export function AppPreview({ tripData }: AppPreviewProps) {
                                 <div className="h-full overflow-y-auto">
                                     {previewScreen === "hero" && (
                                         <div className="relative h-full">
-                                            <div className="h-[240px] bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
-                                                <p className="text-white text-[20px] font-semibold px-6 text-center">
+                                            <div
+                                                className="h-[240px] flex items-center justify-center relative overflow-hidden"
+                                                style={{
+                                                    backgroundImage: tripData?.imagem_hero
+                                                        ? `url(${tripData.imagem_hero})`
+                                                        : "linear-gradient(to bottom right, rgb(59, 130, 246), rgb(34, 211, 238))",
+                                                    backgroundSize: "cover",
+                                                    backgroundPosition: "center",
+                                                }}
+                                            >
+                                                {/* Overlay escuro para melhorar legibilidade */}
+                                                <div className="absolute inset-0 bg-black/30" />
+                                                <p className="relative z-10 text-white text-[20px] font-semibold px-6 text-center drop-shadow-lg">
                                                     {cliente}, prepare-se para viver{" "}
                                                     {hoteis[0]?.cidade || "sua viagem"}.
                                                 </p>
@@ -264,7 +275,9 @@ export function AppPreview({ tripData }: AppPreviewProps) {
                                                         hotel?.noitesTotal;
                                                     const nota = hotel?.nota || hotel?.score;
                                                     const origemNota =
-                                                        hotel?.origemNota || hotel?.fonteNota || "Booking";
+                                                        hotel?.origemNota ||
+                                                        hotel?.fonteNota ||
+                                                        "Booking";
 
                                                     const periodo =
                                                         checkin && checkout
