@@ -28,6 +28,11 @@ function App() {
   const clientName = getClientName(data);
   const resumo = getTripSummary(data);
 
+  // DEBUG: Ver estrutura completa dos dados
+  console.log("📊 Trip data structure:", JSON.stringify(data, null, 2));
+  console.log("📊 Resumo:", resumo);
+  console.log("📊 Pacote base:", data.pacote_base);
+
   return (
     <div key={currentTripId} className="min-h-screen bg-gray-100">
       {/* Header */}
@@ -40,7 +45,6 @@ function App() {
       {/* 3 Colunas */}
       <main className="max-w-[1600px] mx-auto px-6 py-8">
         <div className="grid grid-cols-[340px_1fr_420px] gap-6">
-
           {/* COLUNA 1 - Upload */}
           <div>
             <UploadSection onUploadSuccess={handleUploadSuccess} onRefetch={refetch} />
@@ -51,7 +55,7 @@ function App() {
             <h2 className="text-xl font-semibold text-[#09077D]">
               2. Revise os dados extraídos pela IA
             </h2>
-            <TripSummary resumo={resumo} />
+            <TripSummaryResumo resumo={resumo} />
             <ProductsSection data={data} />
             <BudgetSection data={data} />
           </div>
@@ -60,7 +64,6 @@ function App() {
           <div>
             <AppPreview tripData={data} />
           </div>
-
         </div>
       </main>
     </div>
