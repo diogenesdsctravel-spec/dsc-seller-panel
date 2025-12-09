@@ -1,0 +1,23 @@
+{
+  "cliente": "Euclides Batista Filho",
+  "periodo": {
+    "inicio": "30/01/2026",
+    "fim": "04/02/2026"
+  },
+  "voos": [],
+  "hoteis": [
+    {
+      "cidade": "Recife",
+      "nome": "Rede Andrade LG Inn",
+      "noites": 5,
+      "checkin": "30/01/2026",
+      "checkout": "04/02/2026",
+      "regime": "Café da manhã"
+    }
+  ],
+  "passeios": [],
+  "pacote_base": {
+    "descricao": "Aéreo + Hotel",
+    "valor": 0
+  }
+}

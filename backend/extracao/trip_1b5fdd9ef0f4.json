@@ -1,0 +1,52 @@
+{
+  "cliente": "",
+  "periodo": {
+    "inicio": "23/12/2025",
+    "fim": "29/12/2025"
+  },
+  "voos": [
+    {
+      "origem": "Vitória da Conquista (VDC)",
+      "destino": "São Paulo (GRU)",
+      "data": "23/12/2025",
+      "horario_saida": "05:50",
+      "horario_chegada": "08:00"
+    },
+    {
+      "origem": "São Paulo (GRU)",
+      "destino": "Porto Alegre (POA)",
+      "data": "23/12/2025",
+      "horario_saida": "14:45",
+      "horario_chegada": "16:30"
+    },
+    {
+      "origem": "Porto Alegre (POA)",
+      "destino": "São Paulo (GRU)",
+      "data": "29/12/2025",
+      "horario_saida": "13:40",
+      "horario_chegada": "15:30"
+    },
+    {
+      "origem": "São Paulo (GRU)",
+      "destino": "Vitória da Conquista (VDC)",
+      "data": "29/12/2025",
+      "horario_saida": "21:25",
+      "horario_chegada": "23:25"
+    }
+  ],
+  "hoteis": [
+    {
+      "cidade": "Gramado",
+      "nome": "Naala Gramado",
+      "noites": 6,
+      "checkin": "23/12/2025",
+      "checkout": "29/12/2025",
+      "regime": "Café da manhã"
+    }
+  ],
+  "passeios": [],
+  "pacote_base": {
+    "descricao": "Aéreo + Hotel",
+    "valor": 22751
+  }
+}

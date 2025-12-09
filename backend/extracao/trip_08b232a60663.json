@@ -1,0 +1,38 @@
+{
+  "cliente": "",
+  "periodo": {
+    "inicio": "29/12",
+    "fim": "03/01"
+  },
+  "voos": [
+    {
+      "origem": "Vitória da Conquista (VDC)",
+      "destino": "São Paulo (GRU)",
+      "data": "29/12",
+      "horario_saida": "05:50",
+      "horario_chegada": "08:00"
+    },
+    {
+      "origem": "São Paulo (GRU)",
+      "destino": "Vitória da Conquista (VDC)",
+      "data": "03/01",
+      "horario_saida": "20:45",
+      "horario_chegada": "22:50"
+    }
+  ],
+  "hoteis": [
+    {
+      "cidade": "Vitória da Conquista",
+      "nome": "Pousada La Sierra",
+      "noites": 5,
+      "checkin": "29/12",
+      "checkout": "03/01",
+      "regime": "Café da manhã"
+    }
+  ],
+  "passeios": [],
+  "pacote_base": {
+    "descricao": "Aéreo + Hotel",
+    "valor": 6652
+  }
+}

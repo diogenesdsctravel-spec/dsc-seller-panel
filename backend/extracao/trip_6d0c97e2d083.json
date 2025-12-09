@@ -1,0 +1,33 @@
+{
+  "cliente": "Kennedy Silva",
+  "periodo": {
+    "inicio": "15/02/2025",
+    "fim": "22/02/2025"
+  },
+  "voos": [
+    {
+      "origem": "São Paulo (GRU)",
+      "destino": "Lima (LIM)",
+      "dados": "15/02",
+      "horario_saida": "09:15",
+      "horario_chegada": "14:30"
+    }
+  ],
+  "hoteis": [
+    {
+      "id": "lima",
+      "nome": "Hotel Costa del Sol",
+      "noites": 3,
+      "checkin": "15/02",
+      "checkout": "18/02",
+      "regime": "Sem alimentação"
+    }
+  ],
+  "dinheiros": [
+    {
+      "nome": "City Tour em Cusco",
+      "preco": 64.0,
+      "por_pessoa": true
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "cliente": "",
+  "periodo": {
+    "inicio": "17/12/2025",
+    "fim": "23/12/2025"
+  },
+  "voos": [
+    {
+      "origem": "São Paulo (GRU)",
+      "destino": "Buenos Aires (AEP)",
+      "data": "17/12/2025",
+      "horario_saida": "06:50",
+      "horario_chegada": "09:50"
+    },
+    {
+      "origem": "Buenos Aires (AEP)",
+      "destino": "São Paulo (GRU)",
+      "data": "23/12/2025",
+      "horario_saida": "06:20",
+      "horario_chegada": "09:05"
+    }
+  ],
+  "hoteis": [
+    {
+      "cidade": "Buenos Aires",
+      "nome": "Callao Suites Recoleta",
+      "noites": 6,
+      "checkin": "17/12/2025",
+      "checkout": "23/12/2025",
+      "regime": "Café da manhã"
+    }
+  ],
+  "passeios": [
+    {
+      "nome": "Campanópolis, Visita à Aldeia Mágica e Misteriosa",
+      "valor_por_pessoa": 0,
+      "incluido": true
+    },
+    {
+      "nome": "De Buenos Aires: Excursão pelo Delta do Tigre com passeio de barco",
+      "valor_por_pessoa": 0,
+      "incluido": true
+    },
+    {
+      "nome": "Madero Tango",
+      "valor_por_pessoa": 0,
+      "incluido": true
+    }
+  ],
+  "pacote_base": {
+    "descricao": "Aéreo + Hotel",
+    "valor": 6456
+  }
+}

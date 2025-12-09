@@ -1,0 +1,37 @@
+{
+  "cliente": "Kennedy Silva",
+  "periodo": {
+    "inicio": "15/02",
+    "fim": "22/02"
+  },
+  "voos": [
+    {
+      "origem": "São Paulo (GRU)",
+      "destino": "Lima (LIM)",
+      "data": "15/02",
+      "horario_saida": "09:15",
+      "horario_chegada": "14:30"
+    }
+  ],
+  "hoteis": [
+    {
+      "cidade": "Lima",
+      "nome": "Hotel Costa del Sol",
+      "noites": 3,
+      "checkin": "15/02",
+      "checkout": "18/02",
+      "regime": "Sem alimentação"
+    }
+  ],
+  "passeios": [
+    {
+      "nome": "City Tour em Cusco",
+      "valor_por_pessoa": 64,
+      "incluido": false
+    }
+  ],
+  "pacote_base": {
+    "descricao": "Aéreo + Hotel (casal)",
+    "valor": 6656
+  }
+}
