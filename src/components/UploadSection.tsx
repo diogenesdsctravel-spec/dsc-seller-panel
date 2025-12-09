@@ -79,10 +79,11 @@ export function UploadSection({ onUploadSuccess, onRefetch }: UploadSectionProps
             }
 
             setTimeout(() => {
+                console.log("🔄 Refetching data...");
                 if (onRefetch) {
                     onRefetch();
                 }
-            }, 1000);
+            }, 2000);
 
         } catch (err) {
             setError(

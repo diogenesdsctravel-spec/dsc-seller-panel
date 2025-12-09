@@ -35,7 +35,7 @@ export function BudgetSection({ data }: BudgetSectionProps) {
                                     <p className="text-xs text-gray-500 mt-1">Valor total para o casal</p>
                                 </div>
                                 <p className="text-lg font-semibold text-green-700">
-                                    R$ {data.pacote_base.valor.toLocaleString('pt-BR')}
+                                    R$ {(data.pacote_base.valor || 0).toLocaleString('pt-BR')}
                                 </p>
                             </div>
                         </div>
