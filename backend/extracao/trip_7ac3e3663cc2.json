@@ -1,0 +1,94 @@
+{
+  "cliente": "Cliente",
+  "periodo": {
+    "inicio": "30/01/2026",
+    "fim": "06/02/2026"
+  },
+  "voos": [
+    {
+      "origem": "Vitória da Conquista (VDC)",
+      "destino": "São Paulo (GRU)",
+      "data": "30/01/2026",
+      "horario_saida": "10:40",
+      "horario_chegada": "12:35"
+    },
+    {
+      "origem": "São Paulo (GRU)",
+      "destino": "Buenos Aires (AEP)",
+      "data": "30/01/2026",
+      "horario_saida": "14:05",
+      "horario_chegada": "17:00"
+    },
+    {
+      "origem": "Buenos Aires (EZE)",
+      "destino": "São Paulo (GRU)",
+      "data": "06/02/2026",
+      "horario_saida": "02:30",
+      "horario_chegada": "05:15"
+    },
+    {
+      "origem": "São Paulo (GRU)",
+      "destino": "Vitória da Conquista (VDC)",
+      "data": "06/02/2026",
+      "horario_saida": "08:00",
+      "horario_chegada": "09:55"
+    }
+  ],
+  "hoteis": [
+    {
+      "cidade": "Buenos Aires",
+      "nome": "Waldorf Hotel",
+      "noites": 7,
+      "checkin": "30/01/2026",
+      "checkout": "06/02/2026",
+      "regime": "Só hospedagem"
+    }
+  ],
+  "passeios": [],
+  "pacote_base": {
+    "descricao": "Aéreo + Hotel",
+    "valor": 7910
+  },
+  "imagem_hero": "https://images.unsplash.com/photo-1647286433362-12120e6f3f38?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDE2Njd8MHwxfHNlYXJjaHwxfHxCdWVub3MlMjBBaXJlcyUyMHRyYXZlbCUyMGxhbmRtYXJrJTIwY29sb3JmdWwlMjB2aWJyYW50fGVufDF8MHx8fDE3NjU0NzQ5Mzh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+  "imagens_cidades": {
+    "Buenos Aires": [
+      "https://images.unsplash.com/photo-1647286433362-12120e6f3f38?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDE2Njd8MHwxfHNlYXJjaHwxfHxCdWVub3MlMjBBaXJlcyUyMHRyYXZlbCUyMGxhbmRtYXJrJTIwY29sb3JmdWwlMjB2aWJyYW50fGVufDF8MHx8fDE3NjU0NzQ5Mzh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "https://images.unsplash.com/photo-1687212492910-ba20d912d467?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDE2Njd8MHwxfHNlYXJjaHwyfHxCdWVub3MlMjBBaXJlcyUyMHRyYXZlbCUyMGxhbmRtYXJrJTIwY29sb3JmdWwlMjB2aWJyYW50fGVufDF8MHx8fDE3NjU0NzQ5Mzh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "https://images.unsplash.com/photo-1667846786825-84d41b0667e0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDE2Njd8MHwxfHNlYXJjaHw0fHxCdWVub3MlMjBBaXJlcyUyMHRyYXZlbCUyMGxhbmRtYXJrJTIwY29sb3JmdWwlMjB2aWJyYW50fGVufDF8MHx8fDE3NjU0NzQ5Mzh8MA&ixlib=rb-4.1.0&q=80&w=1080"
+    ]
+  },
+  "roteiro": [
+    {
+      "dia": 1,
+      "titulo": "Chegada"
+    },
+    {
+      "dia": 2,
+      "titulo": "Dia livre"
+    },
+    {
+      "dia": 3,
+      "titulo": "Dia livre"
+    },
+    {
+      "dia": 4,
+      "titulo": "Dia livre"
+    },
+    {
+      "dia": 5,
+      "titulo": "Dia livre"
+    },
+    {
+      "dia": 6,
+      "titulo": "Dia livre"
+    },
+    {
+      "dia": 7,
+      "titulo": "Dia livre"
+    },
+    {
+      "dia": 8,
+      "titulo": "Retorno"
+    }
+  ]
+}

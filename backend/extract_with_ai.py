@@ -5,6 +5,7 @@ from openai import OpenAI
 import PyPDF2
 from get_destination_image import get_hero_image_for_trip
 
+
 def read_pdf_text(pdf_path: Path) -> str:
     """Extrai texto de um arquivo PDF."""
     try:
@@ -18,28 +19,12 @@ def read_pdf_text(pdf_path: Path) -> str:
         print(f"Erro ao ler PDF {pdf_path}: {e}")
         return ""
 
+
 def extract_destinations_from_data(data: dict) -> list[str]:
-    """
-    Extrai lista de destinos dos dados da viagem.
-    
-    Args:
-        data: Dados estruturados da viagem
-        
-    Returns:
-        Lista de cidades/destinos
-    """
+    """Extrai lista de destinos dos HOTÉIS apenas."""
     destinations = []
     
-    # Extrair de voos (destinos)
-    if "voos" in data and isinstance(data["voos"], list):
-        for voo in data["voos"]:
-            if "destino" in voo:
-                # Remove código do aeroporto (ex: "Lima (LIM)" -> "Lima")
-                city = voo["destino"].split("(")[0].strip()
-                if city and city not in destinations:
-                    destinations.append(city)
-    
-    # Extrair de hotéis
+    # Extrair apenas de hotéis
     if "hoteis" in data and isinstance(data["hoteis"], list):
         for hotel in data["hoteis"]:
             if "cidade" in hotel:
@@ -50,15 +35,17 @@ def extract_destinations_from_data(data: dict) -> list[str]:
     print(f"🗺️ Destinos identificados: {', '.join(destinations) if destinations else 'Nenhum'}")
     return destinations
 
-def extract_travel_data(trip_folder: Path) -> dict:
+
+def extract_travel_data(trip_folder: Path, cliente_nome: str = "") -> dict:
     """
     Extrai dados de viagem dos arquivos usando OpenAI.
     
     Args:
         trip_folder: Pasta com os arquivos enviados
+        cliente_nome: Nome do cliente (opcional)
         
     Returns:
-        Dados estruturados da viagem (com imagem do destino)
+        Dados estruturados da viagem (com imagem do destino e roteiro)
     """
     
     api_key = os.getenv("OPENAI_API_KEY")
@@ -76,9 +63,8 @@ def extract_travel_data(trip_folder: Path) -> dict:
                 files_content.append(f"=== Arquivo: {file_path.name} ===\n{text}")
     
     if not files_content:
-        # Se não encontrou PDFs, retorna dados simulados
         print("⚠️ Nenhum PDF encontrado, usando dados simulados")
-        return get_mock_data()
+        return get_mock_data(cliente_nome)
     
     all_text = "\n\n".join(files_content)
     
@@ -94,10 +80,11 @@ INSTRUÇÕES:
 - Se algum campo não estiver disponível, use valores razoáveis ou deixe vazio
 - Datas no formato DD/MM ou DD/MM/AAAA
 - Valores numéricos sem símbolos de moeda
+- Para o campo "cliente", use: "{cliente_nome if cliente_nome else 'Cliente'}"
 
 FORMATO JSON (retorne APENAS JSON, sem texto adicional):
 {{
-  "cliente": "Nome do cliente",
+  "cliente": "{cliente_nome if cliente_nome else 'Cliente'}",
   "periodo": {{
     "inicio": "DD/MM",
     "fim": "DD/MM"
@@ -154,29 +141,51 @@ FORMATO JSON (retorne APENAS JSON, sem texto adicional):
         result_text = response.choices[0].message.content
         extracted_data = json.loads(result_text)
         
+        # Garantir que o nome do cliente está correto
+        if cliente_nome:
+            extracted_data["cliente"] = cliente_nome
+        
         print(f"✅ Extração bem-sucedida de {len(files_content)} arquivo(s)")
         
-        # 🆕 NOVA FUNCIONALIDADE: Buscar imagem do destino
+        # Buscar múltiplas imagens para cada cidade
         destinations = extract_destinations_from_data(extracted_data)
         if destinations:
-            print(f"🖼️ Buscando imagem para destinos: {destinations}")
+            print(f"🖼️ Buscando imagens para destinos: {destinations}")
+            
+            from get_destination_image import get_images_for_all_cities, get_hero_image_for_trip
+            
+            # Hero image (primeira foto da primeira cidade)
             hero_image = get_hero_image_for_trip(destinations)
             extracted_data["imagem_hero"] = hero_image
-            print(f"✅ Imagem adicionada: {hero_image[:80]}...")
+            
+            # Múltiplas imagens para cada cidade
+            all_images = get_images_for_all_cities(destinations)
+            extracted_data["imagens_cidades"] = all_images
+            
+            print(f"✅ Imagens adicionadas para {len(destinations)} cidade(s)")
         else:
             print("⚠️ Nenhum destino identificado, imagem não adicionada")
+        
+        # 🆕 GERAR ROTEIRO COM IA
+        from generate_itinerary import generate_itinerary
+        
+        print("📅 Gerando roteiro...")
+        roteiro = generate_itinerary(extracted_data)
+        extracted_data["roteiro"] = roteiro
+        print(f"✅ Roteiro gerado: {len(roteiro)} dias")
         
         return extracted_data
         
     except Exception as e:
         print(f"❌ Erro na extração com IA: {e}")
         print("⚠️ Retornando dados simulados")
-        return get_mock_data()
+        return get_mock_data(cliente_nome)
 
-def get_mock_data() -> dict:
+
+def get_mock_data(cliente_nome: str = "") -> dict:
     """Retorna dados simulados caso a extração falhe."""
     mock_data = {
-        "cliente": "Cliente (dados simulados)",
+        "cliente": cliente_nome if cliente_nome else "Cliente (dados simulados)",
         "periodo": {
             "inicio": "15/02",
             "fim": "22/02"

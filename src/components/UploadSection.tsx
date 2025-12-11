@@ -13,9 +13,11 @@ interface UploadedFile {
 
 interface UploadSectionProps {
     onUploadSuccess?: (tripId: string) => void;
+    nomeCliente: string;
+    setNomeCliente: (nome: string) => void;
 }
 
-export function UploadSection({ onUploadSuccess }: UploadSectionProps) {
+export function UploadSection({ onUploadSuccess, nomeCliente, setNomeCliente }: UploadSectionProps) {
     const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -69,7 +71,7 @@ export function UploadSection({ onUploadSuccess }: UploadSectionProps) {
             console.log("✅ Upload concluído! Trip ID:", uploadResponse.trip_id);
 
             console.log("🤖 Iniciando extração com IA...");
-            const extractResponse = await extractTripData(uploadResponse.trip_id);
+            const extractResponse = await extractTripData(uploadResponse.trip_id, nomeCliente);
 
             console.log("✅ Extração concluída!", extractResponse);
 
@@ -101,6 +103,20 @@ export function UploadSection({ onUploadSuccess }: UploadSectionProps) {
                 </p>
             </CardHeader>
             <CardContent className="space-y-6">
+                {/* NOVO: Campo Nome do Cliente */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Nome do cliente (opcional)
+                    </label>
+                    <input
+                        type="text"
+                        value={nomeCliente}
+                        onChange={(e) => setNomeCliente(e.target.value)}
+                        placeholder="Ex: João Silva"
+                        className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#50CFAD] focus:border-transparent transition-all text-sm"
+                    />
+                </div>
+
                 <div
                     onDrop={handleDrop}
                     onDragOver={handleDragOver}

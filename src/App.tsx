@@ -1,4 +1,4 @@
-// Build: 2025-12-09 v2
+// Build: 2025-12-09 v3 - Com input de nome do cliente
 import { useState } from "react";
 import { useTrip } from "./hooks/useTrip";
 import { getClientName, getTripSummary } from "./utils/formatters";
@@ -14,6 +14,7 @@ import { AppPreview } from "./components/AppPreview";
 
 function App() {
   const [currentTripId, setCurrentTripId] = useState<string>("demo");
+  const [nomeCliente, setNomeCliente] = useState("");
   const { trip, loading, error, refetch } = useTrip(currentTripId);
 
   const handleUploadSuccess = (tripId: string) => {
@@ -53,7 +54,12 @@ function App() {
         <div className="grid grid-cols-[340px_1fr_420px] gap-6">
           {/* COLUNA 1 - Upload */}
           <div>
-            <UploadSection onUploadSuccess={handleUploadSuccess} onRefetch={refetch} />
+            <UploadSection
+              onUploadSuccess={handleUploadSuccess}
+              onRefetch={refetch}
+              nomeCliente={nomeCliente}
+              setNomeCliente={setNomeCliente}
+            />
           </div>
 
           {/* COLUNA 2 - Revisão */}

@@ -6,10 +6,16 @@ export interface ExtractResponse {
     message: string;
 }
 
-export async function extractTripData(tripId: string): Promise<ExtractResponse> {
+export async function extractTripData(tripId: string, nomeCliente?: string): Promise<ExtractResponse> {
     try {
         const response = await fetch(`${API_BASE_URL}/extract/${tripId}`, {
             method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                cliente_nome: nomeCliente || ""
+            }),
         });
 
         if (!response.ok) {

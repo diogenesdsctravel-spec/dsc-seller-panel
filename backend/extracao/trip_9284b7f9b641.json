@@ -1,0 +1,69 @@
+{
+  "cliente": "",
+  "periodo": {
+    "inicio": "02/12/2025",
+    "fim": "12/12/2025"
+  },
+  "voos": [
+    {
+      "origem": "Salvador (SSA)",
+      "destino": "Brasília (BSB)",
+      "data": "02/12/2025",
+      "horario_saida": "05:35",
+      "horario_chegada": "07:35"
+    },
+    {
+      "origem": "Brasília (BSB)",
+      "destino": "Santiago (SCL)",
+      "data": "02/12/2025",
+      "horario_saida": "08:50",
+      "horario_chegada": "13:35"
+    },
+    {
+      "origem": "Santiago (SCL)",
+      "destino": "Brasília (BSB)",
+      "data": "12/12/2025",
+      "horario_saida": "14:40",
+      "horario_chegada": "19:00"
+    },
+    {
+      "origem": "Brasília (BSB)",
+      "destino": "Salvador (SSA)",
+      "data": "12/12/2025",
+      "horario_saida": "20:40",
+      "horario_chegada": "22:35"
+    }
+  ],
+  "hoteis": [
+    {
+      "cidade": "Santiago",
+      "nome": "Hotel Bonaparte Boutique",
+      "noites": 10,
+      "checkin": "02/12/2025",
+      "checkout": "12/12/2025",
+      "regime": "Café da manhã"
+    }
+  ],
+  "passeios": [
+    {
+      "nome": "Excursão às vinhas Undurraga",
+      "valor_por_pessoa": 0,
+      "incluido": true
+    },
+    {
+      "nome": "Visita a Valparaíso, Viña del Mar, Casablanca e Reñaca",
+      "valor_por_pessoa": 0,
+      "incluido": true
+    },
+    {
+      "nome": "Isla Negra, Casa de Pablo Neruda, Algarrobo e San Alfonso del Mar",
+      "valor_por_pessoa": 0,
+      "incluido": true
+    }
+  ],
+  "pacote_base": {
+    "descricao": "Aéreo + Hotel",
+    "valor": 10467
+  },
+  "imagem_hero": "https://images.unsplash.com/photo-1591297545337-212cc106ee6f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDE2Njd8MHwxfHNlYXJjaHwxfHxCcmFzJUMzJUFEbGlhJTIwdHJhdmVsfGVufDF8MHx8fDE3NjUzNjgzNDl8MA&ixlib=rb-4.1.0&q=80&w=1080"
+}

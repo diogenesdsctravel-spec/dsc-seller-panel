@@ -1,8 +1,14 @@
+// src/components/AppPreview.tsx
 import { useState } from "react";
-import { Smartphone } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Smartphone, MapPin, Clock } from "lucide-react";
+import { motion } from "framer-motion";
+import { extractCities } from "../utils/extractCities";
+import { CidadesIncluidas } from "./CidadesIncluidas";
+import { RoteiroScreen } from "./RoteiroScreen";
+import { BottomNavigation } from "./BottomNavigation";
 
-type PreviewScreen = "hero" | "roteiro" | "voos" | "hoteis" | "orcamento";
+type PreviewScreen = "hero" | "voos" | "hoteis";
+type BottomTab = "inicio" | "roteiro" | "produtos" | "orcamento" | "conta";
 
 interface AppPreviewProps {
     tripData?: any;
@@ -10,364 +16,424 @@ interface AppPreviewProps {
 
 export function AppPreview({ tripData }: AppPreviewProps) {
     const [previewScreen, setPreviewScreen] = useState<PreviewScreen>("hero");
+    const [currentScreen, setCurrentScreen] = useState<"hero" | "cidades" | "roteiro">("hero");
 
-    // Fallbacks + dados reais
-    const cliente: string = tripData?.cliente || "Cliente";
+    // controla qual aba está ativa na barra inferior
+    const [activeTab, setActiveTab] = useState<BottomTab>("roteiro");
 
-    const destinoPrincipal: string =
-        tripData?.destinoPrincipal || tripData?.destino || "Peru";
+    const cities = extractCities(tripData || {});
 
-    const cidadesLinha: string =
-        Array.isArray(tripData?.cidades) && tripData.cidades.length > 0
-            ? tripData.cidades.join(" • ")
-            : "Lima • Cusco • Machu Picchu";
+    const citiesWithImages = cities.map((city, index) => ({
+        ...city,
+        imageUrl:
+            index === 0 && tripData?.imagem_hero
+                ? tripData.imagem_hero
+                : `https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80`,
+    }));
 
-    const diasNoitesResumo: string =
-        tripData?.resumoDuracao || tripData?.duracao || "8 dias • 7 noites";
+    const cliente = tripData?.cliente || "Cliente";
+    const imagemHero = tripData?.imagem_hero;
 
-    const roteiroItems =
-        Array.isArray(tripData?.roteiro) && tripData.roteiro.length > 0
-            ? tripData.roteiro
-            : [
-                "15/02 — Chegada a Lima",
-                "16/02 — Centro Histórico",
-                "17/02 — Barranco",
-                "18/02 — Voo para Cusco",
-                "19/02 — City Tour",
-                "20/02 — Vale Sagrado",
-                "21/02 — Machu Picchu",
-                "22/02 — Retorno",
-            ];
+    const destinos =
+        tripData?.hoteis?.map((h: any) => h.cidade).filter(Boolean) || [];
+    const destinosTexto =
+        destinos.length > 0 ? destinos.join(" • ") : "Destinos";
 
-    const voos =
-        Array.isArray(tripData?.voos) && tripData.voos.length > 0
-            ? tripData.voos
-            : [
-                { rota: "GRU → LIM", data: "15/02 • 09:15" },
-                { rota: "LIM → CUZ", data: "18/02 • 17:55" },
-                { rota: "CUZ → LIM", data: "22/02 • 12:10" },
-                { rota: "LIM → GRU", data: "22/02 • 21:35" },
-            ];
+    const periodoInicio = tripData?.periodo?.inicio || "Data";
+    const periodoFim = tripData?.periodo?.fim || "Data";
 
-    const hoteis =
-        Array.isArray(tripData?.hoteis) && tripData.hoteis.length > 0
-            ? tripData.hoteis
-            : [
-                {
-                    nome: "Costa del Sol",
-                    cidade: "Lima",
-                    checkin: "15/02",
-                    checkout: "18/02",
-                    noites: 3,
-                    nota: "8,4",
-                    origemNota: "Booking",
-                },
-                {
-                    nome: "Tierra Viva",
-                    cidade: "Cusco",
-                    checkin: "18/02",
-                    checkout: "22/02",
-                    noites: 4,
-                    nota: "8,8",
-                    origemNota: "Booking",
-                },
-            ];
+    const totalNoites =
+        tripData?.hoteis?.reduce(
+            (sum: number, h: any) => sum + (h.noites || 0),
+            0
+        ) || 0;
+    const duracaoTexto =
+        totalNoites > 0
+            ? `${totalNoites + 1} dias • ${totalNoites} noites`
+            : "8 dias • 7 noites";
 
-    const orcamentoPrincipal = tripData?.orcamento?.pacotePrincipal || {
-        titulo: "Pacote Aéreo + Hotel",
-        valor: "R$ 6.656",
-        descricao: "✓ Voos • ✓ Hotéis",
-    };
+    const voos = tripData?.voos || [];
+    const hoteis = tripData?.hoteis || [];
 
-    const orcamentoOpcionais =
-        Array.isArray(tripData?.orcamento?.opcionais) &&
-            tripData.orcamento.opcionais.length > 0
-            ? tripData.orcamento.opcionais
-            : [
-                { titulo: "Transfers", valor: "R$ 119,50" },
-                { titulo: "Passeios", valor: "R$ 2.325" },
-            ];
+    // quando o usuário toca em uma aba da BottomNavigation
+    function handleTabChange(tabId: BottomTab) {
+        setActiveTab(tabId);
+
+        if (tabId === "inicio") {
+            // voltar para a PRIMEIRA TELA
+            setPreviewScreen("hero");
+            setCurrentScreen("hero");
+        }
+
+        if (tabId === "roteiro") {
+            // se quiser, podemos forçar ir direto para o roteiro
+            setPreviewScreen("hero");
+            setCurrentScreen("roteiro");
+        }
+
+        // por enquanto, produtos / orçamento / conta não navegam
+        // (você pode ligar depois para outras telas se quiser)
+    }
 
     return (
-        <Card className="shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
-            <CardHeader className="pb-3">
-                <div className="flex items-center gap-2">
-                    <Smartphone className="w-5 h-5 text-[#09077D]" />
-                    <CardTitle className="text-lg font-normal">Preview do App</CardTitle>
-                </div>
-                <p className="text-sm text-gray-600">
-                    Veja como o cliente receberá a apresentação
-                </p>
-            </CardHeader>
-            <CardContent>
-                {/* Tabs */}
-                <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
-                    {[
-                        { id: "hero", label: "Boas-vindas" },
-                        { id: "roteiro", label: "Roteiro" },
-                        { id: "voos", label: "Voos" },
-                        { id: "hoteis", label: "Hotéis" },
-                        { id: "orcamento", label: "Orçamento" },
-                    ].map((tab) => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setPreviewScreen(tab.id as PreviewScreen)}
-                            className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${previewScreen === tab.id
-                                    ? "bg-[#09077D] text-white"
-                                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                                }`}
-                        >
-                            {tab.label}
-                        </button>
-                    ))}
-                </div>
+        <div className="flex flex-col">
+            <div className="flex items-center gap-3 mb-4">
+                <Smartphone className="w-5 h-5 text-gray-600" />
+                <h2 className="text-lg font-semibold text-gray-900">
+                    Pré-visualização do aplicativo
+                </h2>
+            </div>
 
-                {/* iPhone Frame */}
-                <div className="flex justify-center">
-                    <div className="relative">
-                        {/* iPhone 14 Pro Shell */}
-                        <div className="w-[280px] h-[570px] bg-neutral-900 rounded-[40px] p-3 shadow-2xl">
-                            {/* Screen */}
-                            <div className="w-full h-full bg-white rounded-[32px] overflow-hidden relative">
-                                {/* Dynamic Island */}
-                                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100px] h-[30px] bg-black rounded-b-[20px] z-10" />
+            <p className="text-sm text-gray-600 mb-6">
+                Veja como o cliente receberá uma apresentação mobile profissional
+            </p>
 
-                                {/* Content */}
-                                <div className="h-full overflow-y-auto">
-                                    {previewScreen === "hero" && (
-                                        <div className="relative h-full">
-                                            <div
-                                                className="h-[240px] flex items-center justify-center relative overflow-hidden"
-                                                style={{
-                                                    backgroundImage: tripData?.imagem_hero
-                                                        ? `url(${tripData.imagem_hero})`
-                                                        : "linear-gradient(to bottom right, rgb(59, 130, 246), rgb(34, 211, 238))",
-                                                    backgroundSize: "cover",
-                                                    backgroundPosition: "center",
-                                                }}
-                                            >
-                                                {/* Overlay escuro para melhorar legibilidade */}
-                                                <div className="absolute inset-0 bg-black/30" />
-                                                <p className="relative z-10 text-white text-[20px] font-semibold px-6 text-center drop-shadow-lg">
-                                                    {cliente}, prepare-se para viver{" "}
-                                                    {hoteis[0]?.cidade || "sua viagem"}.
-                                                </p>
-                                            </div>
-                                            <div className="p-4">
-                                                <p className="text-[11px] text-gray-600 mb-3">
-                                                    Sua jornada personalizada
-                                                </p>
-                                                <div className="bg-white rounded-xl p-3 mb-2 shadow-sm border border-gray-100">
-                                                    <p className="text-[11px] text-[#09077D] font-medium">
-                                                        📍{" "}
-                                                        {hoteis
-                                                            .map((h: any) => h.cidade)
-                                                            .filter(Boolean)
-                                                            .join(" • ") || "Destinos"}
-                                                    </p>
-                                                </div>
-                                                <div className="bg-white rounded-xl p-3 shadow-sm border border-gray-100">
-                                                    <p className="text-[11px] text-[#09077D] font-medium">
-                                                        🗓️ {tripData?.periodo?.inicio || "Data"} -{" "}
-                                                        {tripData?.periodo?.fim || "Data"}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
+            <div className="relative mx-auto">
+                <div
+                    className="relative bg-black rounded-[52px] p-2 shadow-2xl"
+                    style={{ width: "393px", height: "852px" }}
+                >
+                    <div className="relative w-full h-full bg-[#F7F7F7] rounded-[44px] overflow-hidden flex flex-col">
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 z-50 w-[126px] h-[37px] bg-black rounded-full" />
 
-                                    {previewScreen === "roteiro" && (
-                                        <div className="p-4 pt-12">
-                                            <h2 className="text-[18px] font-semibold text-[#09077D] mb-3">
-                                                Roteiro
-                                            </h2>
-                                            <div className="space-y-2">
-                                                {roteiroItems.map((dia: any, i: number) => {
-                                                    const tituloDia =
-                                                        typeof dia === "string"
-                                                            ? dia
-                                                            : dia?.titulo || dia?.resumo || "";
-                                                    const descricaoDia =
-                                                        typeof dia === "string"
-                                                            ? ""
-                                                            : dia?.descricao || dia?.detalhes || "";
-
-                                                    return (
-                                                        <div
-                                                            key={i}
-                                                            className="bg-white rounded-lg p-3 shadow-sm border border-gray-100"
-                                                        >
-                                                            <p className="text-[11px] font-medium text-[#09077D]">
-                                                                Dia {i + 1}
-                                                            </p>
-                                                            <p className="text-[10px] text-gray-600 mt-0.5">
-                                                                {tituloDia}
-                                                            </p>
-                                                            {descricaoDia && (
-                                                                <p className="text-[10px] text-gray-500 mt-0.5">
-                                                                    {descricaoDia}
-                                                                </p>
-                                                            )}
-                                                        </div>
-                                                    );
-                                                })}
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {previewScreen === "voos" && (
-                                        <div className="p-4 pt-12">
-                                            <h2 className="text-[18px] font-semibold text-[#09077D] mb-3">
-                                                Voos
-                                            </h2>
-                                            <div className="space-y-2">
-                                                {voos.map((voo: any, i: number) => {
-                                                    const rota =
-                                                        voo?.rota ||
-                                                        (voo?.origem && voo?.destino
-                                                            ? `${voo.origem} → ${voo.destino}`
-                                                            : "Voo");
-                                                    const dataLinha =
-                                                        voo?.data ||
-                                                        voo?.dataHorario ||
-                                                        [voo?.dataPartida, voo?.horarioPartida]
-                                                            .filter(Boolean)
-                                                            .join(" • ");
-
-                                                    return (
-                                                        <div
-                                                            key={i}
-                                                            className="bg-white rounded-lg p-3 shadow-sm border border-gray-100"
-                                                        >
-                                                            <p className="text-[11px] font-medium text-[#09077D]">
-                                                                {rota}
-                                                            </p>
-                                                            {dataLinha && (
-                                                                <p className="text-[10px] text-gray-600">
-                                                                    {dataLinha}
-                                                                </p>
-                                                            )}
-                                                        </div>
-                                                    );
-                                                })}
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {previewScreen === "hoteis" && (
-                                        <div className="p-4 pt-12">
-                                            <h2 className="text-[18px] font-semibold text-[#09077D] mb-3">
-                                                Hotéis
-                                            </h2>
-                                            <div className="space-y-3">
-                                                {hoteis.map((hotel: any, i: number) => {
-                                                    const nome =
-                                                        hotel?.nome ||
-                                                        hotel?.hotel ||
-                                                        `${hotel?.nomeHotel || ""}`;
-                                                    const cidade = hotel?.cidade || hotel?.local || "";
-                                                    const checkin = hotel?.checkin || hotel?.inicio || "";
-                                                    const checkout =
-                                                        hotel?.checkout || hotel?.fim || "";
-                                                    const noites =
-                                                        hotel?.noites ??
-                                                        hotel?.qtdeNoites ??
-                                                        hotel?.noitesTotal;
-                                                    const nota = hotel?.nota || hotel?.score;
-                                                    const origemNota =
-                                                        hotel?.origemNota ||
-                                                        hotel?.fonteNota ||
-                                                        "Booking";
-
-                                                    const periodo =
-                                                        checkin && checkout
-                                                            ? `${checkin} - ${checkout}`
-                                                            : "";
-
-                                                    return (
-                                                        <div
-                                                            key={i}
-                                                            className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100"
-                                                        >
-                                                            <div className="h-[80px] bg-gradient-to-br from-gray-300 to-gray-200" />
-                                                            <div className="p-3">
-                                                                <p className="text-[11px] font-medium text-[#09077D] mb-1">
-                                                                    {nome}
-                                                                    {cidade ? ` — ${cidade}` : ""}
-                                                                </p>
-                                                                <p className="text-[10px] text-gray-600">
-                                                                    {periodo && `${periodo} • `}
-                                                                    {noites && `${noites} noites`}
-                                                                    <br />
-                                                                    {nota && (
-                                                                        <>
-                                                                            ⭐ {nota} ({origemNota})
-                                                                        </>
-                                                                    )}
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    );
-                                                })}
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {previewScreen === "orcamento" && (
-                                        <div className="p-4 pt-12">
-                                            <h2 className="text-[18px] font-semibold text-[#09077D] mb-3">
-                                                Orçamento
-                                            </h2>
-                                            <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-3">
-                                                <p className="text-[10px] text-gray-600 mb-1">
-                                                    {orcamentoPrincipal.titulo ||
-                                                        "Pacote Aéreo + Hotel"}
-                                                </p>
-                                                <p className="text-[20px] font-semibold text-[#09077D]">
-                                                    {orcamentoPrincipal.valor || "R$ 0,00"}
-                                                </p>
-                                                {orcamentoPrincipal.descricao && (
-                                                    <p className="text-[10px] text-gray-600 mt-2">
-                                                        {orcamentoPrincipal.descricao}
-                                                    </p>
+                        {/* Área rolável das telas */}
+                        <div className="flex-1 relative w-full overflow-y-auto">
+                            {previewScreen === "hero" && (
+                                <>
+                                    {currentScreen === "hero" && (
+                                        <>
+                                            <div className="relative h-[450px] overflow-hidden rounded-b-[32px]">
+                                                {imagemHero ? (
+                                                    <img
+                                                        src={imagemHero}
+                                                        alt="Destino"
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <div className="w-full h-full bg-gradient-to-br from-blue-500 to-cyan-400" />
                                                 )}
-                                            </div>
-                                            <p className="text-[12px] font-medium text-[#09077D] mb-2">
-                                                Opcionais
-                                            </p>
-                                            <div className="space-y-1.5">
-                                                {orcamentoOpcionais.map((opt: any, i: number) => (
-                                                    <div
-                                                        key={i}
-                                                        className="flex justify-between text-[10px]"
+
+                                                <div className="absolute inset-0 bg-black/30" />
+                                                <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
+
+                                                <div className="absolute bottom-8 left-6 right-6">
+                                                    <h1
+                                                        className="text-white text-[40px] leading-[1.05] mb-3"
+                                                        style={{
+                                                            letterSpacing: "-0.03em",
+                                                            textShadow:
+                                                                "0 2px 12px rgba(0,0,0,0.3)",
+                                                        }}
                                                     >
-                                                        <span className="text-gray-600">
-                                                            {opt.titulo || opt.nome || "Opcional"}
-                                                        </span>
-                                                        <span className="text-[#09077D] font-medium">
-                                                            {opt.valor || "R$ 0,00"}
-                                                        </span>
-                                                    </div>
-                                                ))}
+                                                        {cliente}, prepare-se
+                                                        <br />
+                                                        para viver{" "}
+                                                        {destinos[0] || "sua viagem"}.
+                                                    </h1>
+                                                    <p
+                                                        className="text-white/90 text-[17px] leading-[1.4]"
+                                                        style={{
+                                                            textShadow:
+                                                                "0 1px 8px rgba(0,0,0,0.3)",
+                                                        }}
+                                                    >
+                                                        Sua jornada personalizada
+                                                    </p>
+                                                </div>
                                             </div>
+
+                                            <div className="px-6 pt-8 pb-[120px]">
+                                                <h2
+                                                    className="text-[24px] mb-4"
+                                                    style={{ color: "#09077D" }}
+                                                >
+                                                    Sua viagem premium
+                                                </h2>
+
+                                                <p className="text-[16px] leading-[1.5] text-gray-700 mb-8">
+                                                    Uma experiência personalizada com todo conforto e
+                                                    sofisticação que você merece.
+                                                </p>
+
+                                                <div className="space-y-4">
+                                                    <div className="bg-white rounded-[20px] p-5 flex items-center gap-4 shadow-[0_8px_20px_rgba(0,0,0,0.06)]">
+                                                        <div
+                                                            className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
+                                                            style={{
+                                                                background: "#50CFAD",
+                                                            }}
+                                                        >
+                                                            <MapPin className="w-6 h-6 text-white" />
+                                                        </div>
+                                                        <div>
+                                                            <p
+                                                                className="text-[13px]"
+                                                                style={{ color: "#6B7280" }}
+                                                            >
+                                                                Destinos
+                                                            </p>
+                                                            <p
+                                                                className="text-[17px]"
+                                                                style={{ color: "#09077D" }}
+                                                            >
+                                                                {destinosTexto}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="bg-white rounded-[20px] p-5 flex items-center gap-4 shadow-[0_8px_20px_rgba(0,0,0,0.06)]">
+                                                        <div
+                                                            className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
+                                                            style={{
+                                                                background: "#50CFAD",
+                                                            }}
+                                                        >
+                                                            <Clock className="w-6 h-6 text-white" />
+                                                        </div>
+                                                        <div>
+                                                            <p
+                                                                className="text-[13px]"
+                                                                style={{ color: "#6B7280" }}
+                                                            >
+                                                                Duração
+                                                            </p>
+                                                            <p
+                                                                className="text-[17px]"
+                                                                style={{ color: "#09077D" }}
+                                                            >
+                                                                {duracaoTexto}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="bg-white rounded-[20px] p-5 flex items-center gap-4 shadow-[0_8px_20px_rgba(0,0,0,0.06)]">
+                                                        <div
+                                                            className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 text-[20px]"
+                                                            style={{
+                                                                background: "#50CFAD",
+                                                                color: "white",
+                                                            }}
+                                                        >
+                                                            📅
+                                                        </div>
+                                                        <div>
+                                                            <p
+                                                                className="text-[13px]"
+                                                                style={{ color: "#6B7280" }}
+                                                            >
+                                                                Período
+                                                            </p>
+                                                            <p
+                                                                className="text-[17px]"
+                                                                style={{ color: "#09077D" }}
+                                                            >
+                                                                {periodoInicio} - {periodoFim}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <button
+                                                    onClick={() => {
+                                                        setCurrentScreen("cidades");
+                                                        setActiveTab("roteiro");
+                                                    }}
+                                                    className="w-full mt-8 text-white rounded-[16px] px-8 py-5 text-[17px] transition-all"
+                                                    style={{
+                                                        background: "#09077D",
+                                                        boxShadow:
+                                                            "0 8px 24px rgba(9, 7, 125, 0.35)",
+                                                    }}
+                                                >
+                                                    Ver Detalhes da Viagem
+                                                </button>
+                                            </div>
+                                        </>
+                                    )}
+
+                                    {currentScreen === "cidades" && (
+                                        <CidadesIncluidas
+                                            cities={citiesWithImages}
+                                            onBack={() => {
+                                                setCurrentScreen("hero");
+                                                setActiveTab("inicio");
+                                            }}
+                                            onVerRoteiro={() => {
+                                                setCurrentScreen("roteiro");
+                                                setActiveTab("roteiro");
+                                            }}
+                                        />
+                                    )}
+
+                                    {currentScreen === "roteiro" && (
+                                        <RoteiroScreen
+                                            dias={tripData?.roteiro || []}
+                                            imagensCidades={tripData?.imagens_cidades || {}}
+                                            onBack={() => {
+                                                setCurrentScreen("cidades");
+                                                setActiveTab("roteiro");
+                                            }}
+                                        />
+                                    )}
+                                </>
+                            )}
+
+                            {previewScreen === "voos" && (
+                                <div className="px-6 pt-16 pb-[120px]">
+                                    <button
+                                        onClick={() => setPreviewScreen("hero")}
+                                        className="text-[15px] mb-6"
+                                        style={{ color: "#09077D" }}
+                                    >
+                                        ← Voltar
+                                    </button>
+
+                                    <h1
+                                        className="text-[32px] mb-3 leading-[1.1]"
+                                        style={{
+                                            color: "#09077D",
+                                            letterSpacing: "-0.02em",
+                                        }}
+                                    >
+                                        Voos
+                                    </h1>
+                                    <p className="text-[16px] leading-[1.5] text-gray-700 mb-8">
+                                        Todos os trechos da sua viagem
+                                    </p>
+
+                                    {voos.length > 0 ? (
+                                        <div className="space-y-5">
+                                            {voos.map((voo: any, idx: number) => (
+                                                <div
+                                                    key={idx}
+                                                    className="bg-white rounded-[20px] p-5 shadow-[0_8px_20px_rgba(0,0,0,0.06)]"
+                                                >
+                                                    <div className="flex justify-between items-start mb-4">
+                                                        <div>
+                                                            <p
+                                                                className="text-[14px] mb-1"
+                                                                style={{ color: "#6B7280" }}
+                                                            >
+                                                                {voo.data}
+                                                            </p>
+                                                            <h3
+                                                                className="text-[19px]"
+                                                                style={{ color: "#09077D" }}
+                                                            >
+                                                                {voo.origem} → {voo.destino}
+                                                            </h3>
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <p
+                                                                className="text-[14px]"
+                                                                style={{ color: "#6B7280" }}
+                                                            >
+                                                                Saída
+                                                            </p>
+                                                            <p
+                                                                className="text-[17px]"
+                                                                style={{ color: "#09077D" }}
+                                                            >
+                                                                {voo.horario_saida}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    {voo.companhia && (
+                                                        <p className="text-[15px] text-gray-700">
+                                                            {voo.companhia}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            ))}
                                         </div>
+                                    ) : (
+                                        <p className="text-gray-500 text-center py-8">
+                                            Nenhum voo disponível
+                                        </p>
                                     )}
                                 </div>
-                            </div>
+                            )}
+
+                            {previewScreen === "hoteis" && (
+                                <div className="px-6 pt-16 pb-[120px]">
+                                    <button
+                                        onClick={() => setPreviewScreen("hero")}
+                                        className="text-[15px] mb-6"
+                                        style={{ color: "#09077D" }}
+                                    >
+                                        ← Voltar
+                                    </button>
+
+                                    <h1
+                                        className="text-[32px] mb-3 leading-[1.1]"
+                                        style={{
+                                            color: "#09077D",
+                                            letterSpacing: "-0.02em",
+                                        }}
+                                    >
+                                        Hotéis
+                                    </h1>
+                                    <p className="text-[16px] leading-[1.5] text-gray-700 mb-8">
+                                        Acomodações selecionadas
+                                    </p>
+
+                                    {hoteis.length > 0 ? (
+                                        <div className="space-y-6">
+                                            {hoteis.map((hotel: any, idx: number) => (
+                                                <div
+                                                    key={idx}
+                                                    className="bg-white rounded-[20px] p-5 shadow-[0_8px_20px_rgba(0,0,0,0.06)]"
+                                                >
+                                                    <h3
+                                                        className="text-[19px] mb-2"
+                                                        style={{ color: "#09077D" }}
+                                                    >
+                                                        {hotel.nome || "Hotel"}
+                                                    </h3>
+                                                    <p className="text-[15px] text-gray-700 mb-3">
+                                                        <strong>{hotel.cidade}</strong> •{" "}
+                                                        {hotel.noites} noites
+                                                    </p>
+                                                    <p
+                                                        className="text-[14px]"
+                                                        style={{ color: "#6B7280" }}
+                                                    >
+                                                        Check-in: {hotel.checkin} | Check-out:{" "}
+                                                        {hotel.checkout}
+                                                    </p>
+                                                    {hotel.regime && (
+                                                        <p
+                                                            className="text-[14px] mt-2"
+                                                            style={{ color: "#6B7280" }}
+                                                        >
+                                                            {hotel.regime}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p className="text-gray-500 text-center py-8">
+                                            Nenhum hotel disponível
+                                        </p>
+                                    )}
+                                </div>
+                            )}
                         </div>
 
-                        {/* iPhone Buttons */}
-                        <div className="absolute -left-[1.5px] top-[92px] w-[2px] h-[32px] bg-neutral-800 rounded-l-sm" />
-                        <div className="absolute -left-[1.5px] top-[138px] w-[2px] h-[32px] bg-neutral-800 rounded-l-sm" />
-                        <div className="absolute -left-[1.5px] top-[178px] w-[2px] h-[32px] bg-neutral-800 rounded-l-sm" />
-                        <div className="absolute -right-[1.5px] top-[132px] w-[2px] h-[60px] bg-neutral-800 rounded-r-sm" />
+                        {/* BottomNavigation fixa no rodapé do “iPhone” */}
+                        <BottomNavigation
+                            activeTab={activeTab}
+                            onTabChange={handleTabChange}
+                        />
                     </div>
                 </div>
 
-                <p className="text-[12px] text-center text-gray-500 mt-4">
-                    Atualiza em tempo real conforme você edita
-                </p>
-            </CardContent>
-        </Card>
+                <div className="absolute -left-[2px] top-[140px] w-[3px] h-[50px] bg-neutral-800 rounded-l-sm" />
+                <div className="absolute -left-[2px] top-[210px] w-[3px] h-[50px] bg-neutral-800 rounded-l-sm" />
+                <div className="absolute -left-[2px] top-[270px] w-[3px] h-[50px] bg-neutral-800 rounded-l-sm" />
+                <div className="absolute -right-[2px] top-[200px] w-[3px] h-[90px] bg-neutral-800 rounded-r-sm" />
+            </div>
+        </div>
     );
 }
