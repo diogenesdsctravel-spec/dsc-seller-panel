@@ -3,7 +3,6 @@ import json
 from pathlib import Path
 from openai import OpenAI
 import PyPDF2
-from get_destination_image import get_hero_image_for_trip
 
 
 def read_pdf_text(pdf_path: Path) -> str:
@@ -152,7 +151,7 @@ FORMATO JSON (retorne APENAS JSON, sem texto adicional):
         if destinations:
             print(f"🖼️ Buscando imagens para destinos: {destinations}")
             
-            from get_destination_image import get_images_for_all_cities, get_hero_image_for_trip
+            from image_search import get_images_for_all_cities, get_hero_image_for_trip
             
             # Hero image (primeira foto da primeira cidade)
             hero_image = get_hero_image_for_trip(destinations)
@@ -184,6 +183,9 @@ FORMATO JSON (retorne APENAS JSON, sem texto adicional):
 
 def get_mock_data(cliente_nome: str = "") -> dict:
     """Retorna dados simulados caso a extração falhe."""
+    
+    from image_search import get_hero_image_for_trip
+    
     mock_data = {
         "cliente": cliente_nome if cliente_nome else "Cliente (dados simulados)",
         "periodo": {

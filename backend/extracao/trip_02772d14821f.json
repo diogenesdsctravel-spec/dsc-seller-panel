@@ -1,0 +1,134 @@
+{
+  "cliente": "Cliente",
+  "periodo": {
+    "inicio": "30/01",
+    "fim": "06/02"
+  },
+  "voos": [
+    {
+      "origem": "Vitória da Conquista (VDC)",
+      "destino": "São Paulo (GRU)",
+      "data": "30/01",
+      "horario_saida": "10:40",
+      "horario_chegada": "12:35"
+    },
+    {
+      "origem": "São Paulo (GRU)",
+      "destino": "Buenos Aires (AEP)",
+      "data": "30/01",
+      "horario_saida": "14:05",
+      "horario_chegada": "17:00"
+    },
+    {
+      "origem": "Buenos Aires (EZE)",
+      "destino": "São Paulo (GRU)",
+      "data": "06/02",
+      "horario_saida": "02:30",
+      "horario_chegada": "05:15"
+    },
+    {
+      "origem": "São Paulo (GRU)",
+      "destino": "Vitória da Conquista (VDC)",
+      "data": "06/02",
+      "horario_saida": "08:00",
+      "horario_chegada": "09:55"
+    }
+  ],
+  "hoteis": [
+    {
+      "cidade": "Buenos Aires",
+      "nome": "Waldorf Hotel",
+      "noites": 7,
+      "checkin": "30/01",
+      "checkout": "06/02",
+      "regime": "Só hospedagem"
+    }
+  ],
+  "passeios": [],
+  "pacote_base": {
+    "descricao": "Aéreo + Hotel",
+    "valor": 7910
+  },
+  "imagem_hero": "https://images.unsplash.com/photo-1647286433362-12120e6f3f38?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDE2Njd8MHwxfHNlYXJjaHwxfHxCdWVub3MlMjBBaXJlcyUyMHRyYXZlbCUyMGxhbmRtYXJrJTIwY29sb3JmdWwlMjB2aWJyYW50fGVufDF8MHx8fDE3NjU0NzQ5Mzh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+  "imagens_cidades": {
+    "Buenos Aires": [
+      "https://images.unsplash.com/photo-1647286433362-12120e6f3f38?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDE2Njd8MHwxfHNlYXJjaHwxfHxCdWVub3MlMjBBaXJlcyUyMHRyYXZlbCUyMGxhbmRtYXJrJTIwY29sb3JmdWwlMjB2aWJyYW50fGVufDF8MHx8fDE3NjU0NzQ5Mzh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "https://images.unsplash.com/photo-1687212492910-ba20d912d467?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDE2Njd8MHwxfHNlYXJjaHwyfHxCdWVub3MlMjBBaXJlcyUyMHRyYXZlbCUyMGxhbmRtYXJrJTIwY29sb3JmdWwlMjB2aWJyYW50fGVufDF8MHx8fDE3NjU0NzQ5Mzh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "https://images.unsplash.com/photo-1667846786825-84d41b0667e0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDE2Njd8MHwxfHNlYXJjaHw0fHxCdWVub3MlMjBBaXJlcyUyMHRyYXZlbCUyMGxhbmRtYXJrJTIwY29sb3JmdWwlMjB2aWJyYW50fGVufDF8MHx8fDE3NjU0NzQ5Mzh8MA&ixlib=rb-4.1.0&q=80&w=1080"
+    ]
+  },
+  "roteiro": [
+    {
+      "dia": 1,
+      "data": "30/01",
+      "titulo": "Chegada a Buenos Aires",
+      "horario": "Chegada às 17:00",
+      "descricao": "Ao desembarcar no Aeroporto Aeroparque Jorge Newbery (AEP), um parceiro da DSC Travel estará aguardando para levá-lo ao Hotel Waldorf com conforto e segurança. Durante o trajeto, aproveite para apreciar as primeiras vistas da cidade.\n\nApós o check-in no hotel, tire um tempo para descansar e se aclimatar ao novo fuso horário. À noite, explore os arredores do hotel e desfrute de um jantar em um dos restaurantes locais, experimentando a famosa carne argentina.\n\nDica: Uma caminhada pelo bairro da Recoleta é uma ótima forma de começar sua imersão na cultura portenha. A região é segura e oferece uma variedade de opções gastronômicas.",
+      "transfer": "a-incluir",
+      "dica": "O bairro de Recoleta é perfeito para sua primeira caminhada. Seguro e charmoso!"
+    },
+    {
+      "dia": 2,
+      "data": "31/01",
+      "titulo": "City Tour por Buenos Aires",
+      "horario": null,
+      "descricao": "Inicie o dia com um café da manhã típico portenho em uma das muitas cafeterias ao redor. Em seguida, embarque em um city tour para explorar os principais pontos turísticos de Buenos Aires. Visite o icônico Obelisco e o deslumbrante Teatro Colón, duas das atrações mais famosas da cidade.\n\nDurante a tarde, dirija-se à Plaza de Mayo para admirar a Casa Rosada, sede da presidência argentina. Aproveite para caminhar pelos arredores e absorver a atmosfera histórica do local.\n\nÀ noite, dirija-se a Puerto Madero, uma área moderna e sofisticada repleta de restaurantes e bares. Escolha um local para jantar com vista para o rio e saboreie um prato tradicional argentino.",
+      "transfer": null,
+      "dica": "Reserve ingressos antecipadamente para o Teatro Colón, especialmente se desejar assistir a uma apresentação."
+    },
+    {
+      "dia": 3,
+      "data": "01/02",
+      "titulo": "Explorando Palermo",
+      "horario": null,
+      "descricao": "Comece o dia explorando o charmoso bairro de Palermo, conhecido por seus parques exuberantes e ruas arborizadas. Visite o Jardim Japonês e o Rosedal, duas das áreas verdes mais bonitas da cidade.\n\nApós um almoço em um dos cafés estilosos de Palermo Soho, passeie pelas boutiques e lojas de design que fazem deste bairro um paraíso para compras.\n\nÀ noite, experimente a vida noturna vibrante de Palermo Hollywood, onde você encontrará uma variedade de bares e restaurantes da moda. Desfrute de um jantar descontraído seguido de coquetéis em um dos muitos bares animados.",
+      "transfer": null,
+      "dica": "Use o sistema de bicicletas públicas de Buenos Aires para se locomover facilmente por Palermo."
+    },
+    {
+      "dia": 4,
+      "data": "02/02",
+      "titulo": "La Boca e San Telmo",
+      "horario": null,
+      "descricao": "Inicie o dia com uma visita ao bairro colorido de La Boca. Explore a famosa rua Caminito, repleta de arte de rua e dançarinos de tango. Não deixe de visitar o estádio La Bombonera, lar do clube Boca Juniors.\n\nDepois, dirija-se ao bairro de San Telmo, conhecido por sua atmosfera boêmia. Passeie pelo Mercado de San Telmo, onde você encontrará antiguidades, artesanato e comida típica.\n\nÀ noite, escolha um restaurante em San Telmo para jantar e, se for fim de semana, aproveite as apresentações de tango ao vivo nas praças.",
+      "transfer": null,
+      "dica": "Cuidado com seus pertences em La Boca, especialmente em áreas mais movimentadas."
+    },
+    {
+      "dia": 5,
+      "data": "03/02",
+      "titulo": "Recoleta e sua História",
+      "horario": null,
+      "descricao": "Comece o dia explorando o elegante bairro da Recoleta. Visite o famoso Cemitério da Recoleta, onde personalidades importantes estão enterradas, incluindo Eva Perón. Admire a arquitetura impressionante do local.\n\nPasse a tarde explorando o Museu Nacional de Belas Artes, que abriga uma vasta coleção de arte argentina e internacional.\n\nPara a noite, reserve uma mesa em um dos restaurantes de alta gastronomia da Recoleta e desfrute de uma experiência culinária inesquecível.",
+      "transfer": null,
+      "dica": "Visite o Cemitério da Recoleta pela manhã para evitar multidões e aproveitar melhor a visita."
+    },
+    {
+      "dia": 6,
+      "data": "04/02",
+      "titulo": "Dia de Compras em Buenos Aires",
+      "horario": null,
+      "descricao": "Dedique o dia às compras, começando pela famosa Calle Florida, onde você encontrará uma variedade de lojas de roupas, artesanato e artigos de couro.\n\nDepois, explore o shopping Galerías Pacífico, um dos mais belos da cidade, com sua decoração elegante e variedade de lojas.\n\nÀ noite, relaxe em um dos muitos cafés tradicionais da cidade, como o Café Tortoni, e desfrute de um café ou chocolate quente acompanhado de um doce típico argentino.",
+      "transfer": null,
+      "dica": "Leve uma bolsa extra para suas compras e aproveite as promoções de artigos de couro."
+    },
+    {
+      "dia": 7,
+      "data": "05/02",
+      "titulo": "Último Dia em Buenos Aires",
+      "horario": null,
+      "descricao": "Aproveite seu último dia para revisitar seus locais favoritos ou explorar novas áreas que ainda não conheceu. Considere uma visita ao Museu de Arte Latino-Americana de Buenos Aires (MALBA) para uma dose final de cultura.\n\nDesfrute de um almoço tranquilo em um dos restaurantes de sua escolha e saboreie os sabores da culinária local pela última vez.\n\nPasse a tarde relaxando em um dos parques da cidade ou fazendo suas últimas compras de lembranças.",
+      "transfer": null,
+      "dica": "Verifique as políticas de check-out antecipado do seu hotel e considere deixar suas malas na recepção para aproveitar o dia sem preocupações."
+    },
+    {
+      "dia": 8,
+      "data": "06/02",
+      "titulo": "Retorno",
+      "horario": "Partida às 02:30",
+      "descricao": "Realize o check-out do hotel e prepare-se para seu retorno. Um transfer estará disponível para levá-lo ao Aeroporto Ezeiza, garantindo que chegue com tempo de sobra para o voo.\n\nAproveite para refletir sobre sua viagem e planejar suas próximas aventuras enquanto aguarda o embarque no aeroporto.",
+      "transfer": "a-incluir",
+      "dica": "Considere fazer o check-in online para agilizar o processo no aeroporto e garantir seu assento preferido."
+    }
+  ]
+}
