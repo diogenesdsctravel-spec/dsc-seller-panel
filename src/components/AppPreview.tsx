@@ -1,4 +1,3 @@
-// src/components/AppPreview.tsx
 import { useState } from "react";
 import { Smartphone, MapPin, Clock } from "lucide-react";
 import { motion } from "framer-motion";
@@ -6,9 +5,24 @@ import { extractCities } from "../utils/extractCities";
 import { CidadesIncluidas } from "./CidadesIncluidas";
 import { RoteiroScreen } from "./RoteiroScreen";
 import { BottomNavigation } from "./BottomNavigation";
+import { ProdutosScreen } from "./ProdutosScreen";
+import { VoosResumoScreen } from "./VoosResumoScreen";
+import { VoosTimelineScreen } from "./VoosTimelineScreen";
 
 type PreviewScreen = "hero" | "voos" | "hoteis";
 type BottomTab = "inicio" | "roteiro" | "produtos" | "orcamento" | "conta";
+
+type AppScreen =
+    | "hero"
+    | "cidades"
+    | "roteiro"
+    | "produtos"
+    | "voos-resumo"
+    | "voos-timeline-ida"
+    | "voos-timeline-volta"
+    | "hoteis"
+    | "transfers"
+    | "passeios";
 
 interface AppPreviewProps {
     tripData?: any;
@@ -16,9 +30,7 @@ interface AppPreviewProps {
 
 export function AppPreview({ tripData }: AppPreviewProps) {
     const [previewScreen, setPreviewScreen] = useState<PreviewScreen>("hero");
-    const [currentScreen, setCurrentScreen] = useState<"hero" | "cidades" | "roteiro">("hero");
-
-    // controla qual aba está ativa na barra inferior
+    const [currentScreen, setCurrentScreen] = useState<AppScreen>("hero");
     const [activeTab, setActiveTab] = useState<BottomTab>("roteiro");
 
     const cities = extractCities(tripData || {});
@@ -28,7 +40,7 @@ export function AppPreview({ tripData }: AppPreviewProps) {
         imageUrl:
             index === 0 && tripData?.imagem_hero
                 ? tripData.imagem_hero
-                : `https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80`,
+                : "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
     }));
 
     const cliente = tripData?.cliente || "Cliente";
@@ -47,6 +59,7 @@ export function AppPreview({ tripData }: AppPreviewProps) {
             (sum: number, h: any) => sum + (h.noites || 0),
             0
         ) || 0;
+
     const duracaoTexto =
         totalNoites > 0
             ? `${totalNoites + 1} dias • ${totalNoites} noites`
@@ -55,24 +68,25 @@ export function AppPreview({ tripData }: AppPreviewProps) {
     const voos = tripData?.voos || [];
     const hoteis = tripData?.hoteis || [];
 
-    // quando o usuário toca em uma aba da BottomNavigation
     function handleTabChange(tabId: BottomTab) {
         setActiveTab(tabId);
 
         if (tabId === "inicio") {
-            // voltar para a PRIMEIRA TELA
             setPreviewScreen("hero");
             setCurrentScreen("hero");
         }
 
         if (tabId === "roteiro") {
-            // se quiser, podemos forçar ir direto para o roteiro
             setPreviewScreen("hero");
             setCurrentScreen("roteiro");
         }
 
-        // por enquanto, produtos / orçamento / conta não navegam
-        // (você pode ligar depois para outras telas se quiser)
+        if (tabId === "produtos") {
+            setPreviewScreen("hero");
+            setCurrentScreen("produtos");
+        }
+
+        // orcamento e conta ainda não navegam
     }
 
     return (
@@ -96,7 +110,6 @@ export function AppPreview({ tripData }: AppPreviewProps) {
                     <div className="relative w-full h-full bg-[#F7F7F7] rounded-[44px] overflow-hidden flex flex-col">
                         <div className="absolute top-0 left-1/2 -translate-x-1/2 z-50 w-[126px] h-[37px] bg-black rounded-full" />
 
-                        {/* Área rolável das telas */}
                         <div className="flex-1 relative w-full overflow-y-auto">
                             {previewScreen === "hero" && (
                                 <>
@@ -121,20 +134,17 @@ export function AppPreview({ tripData }: AppPreviewProps) {
                                                         className="text-white text-[40px] leading-[1.05] mb-3"
                                                         style={{
                                                             letterSpacing: "-0.03em",
-                                                            textShadow:
-                                                                "0 2px 12px rgba(0,0,0,0.3)",
+                                                            textShadow: "0 2px 12px rgba(0,0,0,0.3)",
                                                         }}
                                                     >
                                                         {cliente}, prepare-se
                                                         <br />
-                                                        para viver{" "}
-                                                        {destinos[0] || "sua viagem"}.
+                                                        para viver {destinos[0] || "sua viagem"}.
                                                     </h1>
                                                     <p
                                                         className="text-white/90 text-[17px] leading-[1.4]"
                                                         style={{
-                                                            textShadow:
-                                                                "0 1px 8px rgba(0,0,0,0.3)",
+                                                            textShadow: "0 1px 8px rgba(0,0,0,0.3)",
                                                         }}
                                                     >
                                                         Sua jornada personalizada
@@ -241,8 +251,7 @@ export function AppPreview({ tripData }: AppPreviewProps) {
                                                     className="w-full mt-8 text-white rounded-[16px] px-8 py-5 text-[17px] transition-all"
                                                     style={{
                                                         background: "#09077D",
-                                                        boxShadow:
-                                                            "0 8px 24px rgba(9, 7, 125, 0.35)",
+                                                        boxShadow: "0 8px 24px rgba(9, 7, 125, 0.35)",
                                                     }}
                                                 >
                                                     Ver Detalhes da Viagem
@@ -272,6 +281,90 @@ export function AppPreview({ tripData }: AppPreviewProps) {
                                             onBack={() => {
                                                 setCurrentScreen("cidades");
                                                 setActiveTab("roteiro");
+                                            }}
+                                        />
+                                    )}
+
+                                    {currentScreen === "produtos" && (
+                                        <ProdutosScreen
+                                            tripData={tripData}
+                                            onNavigate={(screen) => {
+                                                if (screen === "voos") {
+                                                    setCurrentScreen("voos-resumo");
+                                                } else {
+                                                    setCurrentScreen(screen as AppScreen);
+                                                }
+                                            }}
+                                            onTabChange={(tab) => {
+                                                if (tab === "inicio") {
+                                                    setCurrentScreen("hero");
+                                                    setActiveTab("inicio");
+                                                }
+                                                if (tab === "produtos") {
+                                                    setCurrentScreen("produtos");
+                                                    setActiveTab("produtos");
+                                                }
+                                            }}
+                                        />
+                                    )}
+
+                                    {currentScreen === "voos-resumo" && (
+                                        <VoosResumoScreen
+                                            tripData={tripData}
+                                            onBack={() => setCurrentScreen("produtos")}
+                                            onNavigateToTimeline={(tipo) =>
+                                                tipo === "ida"
+                                                    ? setCurrentScreen("voos-timeline-ida")
+                                                    : setCurrentScreen("voos-timeline-volta")
+                                            }
+                                            onTabChange={(tab) => {
+                                                if (tab === "inicio") {
+                                                    setCurrentScreen("hero");
+                                                    setActiveTab("inicio");
+                                                }
+                                                if (tab === "produtos") {
+                                                    setCurrentScreen("produtos");
+                                                    setActiveTab("produtos");
+                                                }
+                                            }}
+                                        />
+                                    )}
+
+                                    {currentScreen === "voos-timeline-ida" && (
+                                        <VoosTimelineScreen
+                                            tripData={tripData}
+                                            tipo="ida"
+                                            onBack={() => setCurrentScreen("voos-resumo")}
+                                            onNavigateToVolta={() =>
+                                                setCurrentScreen("voos-timeline-volta")
+                                            }
+                                            onTabChange={(tab) => {
+                                                if (tab === "inicio") {
+                                                    setCurrentScreen("hero");
+                                                    setActiveTab("inicio");
+                                                }
+                                                if (tab === "produtos") {
+                                                    setCurrentScreen("produtos");
+                                                    setActiveTab("produtos");
+                                                }
+                                            }}
+                                        />
+                                    )}
+
+                                    {currentScreen === "voos-timeline-volta" && (
+                                        <VoosTimelineScreen
+                                            tripData={tripData}
+                                            tipo="volta"
+                                            onBack={() => setCurrentScreen("voos-resumo")}
+                                            onTabChange={(tab) => {
+                                                if (tab === "inicio") {
+                                                    setCurrentScreen("hero");
+                                                    setActiveTab("inicio");
+                                                }
+                                                if (tab === "produtos") {
+                                                    setCurrentScreen("produtos");
+                                                    setActiveTab("produtos");
+                                                }
                                             }}
                                         />
                                     )}
@@ -391,8 +484,8 @@ export function AppPreview({ tripData }: AppPreviewProps) {
                                                         {hotel.nome || "Hotel"}
                                                     </h3>
                                                     <p className="text-[15px] text-gray-700 mb-3">
-                                                        <strong>{hotel.cidade}</strong> •{" "}
-                                                        {hotel.noites} noites
+                                                        <strong>{hotel.cidade}</strong> • {hotel.noites}{" "}
+                                                        noites
                                                     </p>
                                                     <p
                                                         className="text-[14px]"
@@ -421,7 +514,6 @@ export function AppPreview({ tripData }: AppPreviewProps) {
                             )}
                         </div>
 
-                        {/* BottomNavigation fixa no rodapé do “iPhone” */}
                         <BottomNavigation
                             activeTab={activeTab}
                             onTabChange={handleTabChange}
