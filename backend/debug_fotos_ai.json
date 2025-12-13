@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://images.unsplash.com/photo-1707589884850-ca72d782f881?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDE2Njd8MHwxfHNlYXJjaHwxfHxDYXNhJTIwUm9zYWRhJTIwQnVlbm9zJTIwQWlyZXMlMjBBcmdlbnRpbmElMjBwaW5rJTIwZ292ZXJubWVudCUyMHBhbGFjZSUyMHBsYXphJTIwZGUlMjBtYXlvfGVufDF8MHx8fDE3NjU1ODE3NTd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    "description": "Una tarde normal camninando por la plaza de mayo con vista la pirámida de mayo y la casa rosada. Sede del Gobierno de Argentina.",
+    "likes": 0,
+    "width": 4032,
+    "height": 3024,
+    "score_iconica": 9.5,
+    "score_cartao": 6.5
+  },
+  {
+    "url": "https://images.unsplash.com/photo-1668573432550-0ae0a6b6c163?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDE2Njd8MHwxfHNlYXJjaHwyfHxDYXNhJTIwUm9zYWRhJTIwQnVlbm9zJTIwQWlyZXMlMjBBcmdlbnRpbmElMjBwaW5rJTIwZ292ZXJubWVudCUyMHBhbGFjZSUyMHBsYXphJTIwZGUlMjBtYXlvfGVufDF8MHx8fDE3NjU1ODE3NTd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    "description": "a large building with a clock tower",
+    "likes": 5,
+    "width": 3936,
+    "height": 2624,
+    "score_iconica": 2.0,
+    "score_cartao": 4.5
+  }
+]

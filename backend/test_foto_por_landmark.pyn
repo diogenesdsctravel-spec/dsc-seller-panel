@@ -1,0 +1,108 @@
+"""
+Teste isolado: Gera roteiro e busca fotos por landmark
+"""
+
+from dotenv import load_dotenv
+load_dotenv()
+
+import json
+from generate_itinerary import generate_itinerary
+from image_search import search_multiple_images
+
+# Dados de teste: Viagem para Bariloche (2 dias)
+test_data = {
+    "periodo": {"inicio": "15/01", "fim": "17/01"},
+    "voos": [
+        {
+            "origem": "São Paulo (GRU)",
+            "destino": "San Carlos de Bariloche (BRC)",
+            "horario_chegada": "14:00",
+            "data": "15/01"
+        },
+        {
+            "origem": "San Carlos de Bariloche (BRC)",
+            "destino": "São Paulo (GRU)",
+            "horario_saida": "16:00",
+            "data": "17/01"
+        }
+    ],
+    "hoteis": [
+        {
+            "cidade": "San Carlos de Bariloche",
+            "nome": "Hotel Bariloche",
+            "noites": 2,
+            "checkin": "15/01",
+            "checkout": "17/01"
+        }
+    ],
+    "passeios": []
+}
+
+print("=" * 70)
+print("🧪 TESTE ISOLADO: Roteiro + Fotos por Landmark")
+print("=" * 70)
+
+# 1. Gerar roteiro
+print("\n📅 GERANDO ROTEIRO...")
+roteiro = generate_itinerary(test_data)
+
+if not roteiro:
+    print("❌ Falha ao gerar roteiro")
+    exit(1)
+
+print(f"✅ Roteiro gerado com {len(roteiro)} dias\n")
+
+# 2. Mostrar landmarks gerados
+print("🏔️ LANDMARKS GERADOS PELA IA:")
+print("-" * 70)
+for dia in roteiro:
+    print(f"Dia {dia.get('dia')}: {dia.get('titulo')}")
+    print(f"  Landmark: {dia.get('landmark', 'N/A')}")
+print()
+
+# 3. Buscar fotos para cada landmark
+print("📸 BUSCANDO FOTOS PARA CADA LANDMARK:")
+print("=" * 70)
+
+for dia in roteiro:
+    landmark = dia.get("landmark")
+    if not landmark:
+        print(f"⚠️ Dia {dia.get('dia')} sem landmark")
+        continue
+    
+    print(f"\nDia {dia.get('dia')}: {landmark}")
+    print("-" * 70)
+    
+    # Buscar 1 foto
+    fotos = search_multiple_images(landmark, count=1)
+    
+    if fotos:
+        dia["imagem_dia"] = fotos[0]
+        print(f"✅ Foto encontrada:")
+        print(f"   URL: {fotos[0][:100]}...")
+    else:
+        print(f"❌ Nenhuma foto encontrada")
+
+# 4. Salvar resultado
+output_file = "test_resultado_bariloche.json"
+with open(output_file, "w", encoding="utf-8") as f:
+    json.dump(roteiro, f, ensure_ascii=False, indent=2)
+
+print("\n" + "=" * 70)
+print(f"✅ TESTE CONCLUÍDO!")
+print(f"📄 Resultado salvo em: {output_file}")
+print("=" * 70)
+
+# 5. Verificar se fotos são diferentes
+print("\n🔍 VERIFICANDO SE AS FOTOS SÃO DIFERENTES:")
+print("-" * 70)
+urls = [dia.get("imagem_dia") for dia in roteiro if dia.get("imagem_dia")]
+
+if len(urls) != len(set(urls)):
+    print("❌ PROBLEMA: Fotos repetidas detectadas!")
+    for i, url in enumerate(urls, 1):
+        print(f"  Dia {i}: {url[:80]}...")
+else:
+    print("✅ Todas as fotos são diferentes!")
+    for i, url in enumerate(urls, 1):
+        print(f"  Dia {i}: {url[:80]}...")

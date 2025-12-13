@@ -1,0 +1,199 @@
+{
+  "cliente": "Cliente",
+  "periodo": {
+    "inicio": "08/12/2025",
+    "fim": "18/12/2025"
+  },
+  "voos": [
+    {
+      "origem": "Salvador (SSA)",
+      "destino": "Buenos Aires (AEP)",
+      "data": "08/12/2025",
+      "horario_saida": "00:30",
+      "horario_chegada": "05:20"
+    },
+    {
+      "origem": "Buenos Aires (AEP)",
+      "destino": "San Carlos de Bariloche (BRC)",
+      "data": "08/12/2025",
+      "horario_saida": "10:50",
+      "horario_chegada": "13:15"
+    },
+    {
+      "origem": "San Carlos de Bariloche (BRC)",
+      "destino": "Buenos Aires (AEP)",
+      "data": "18/12/2025",
+      "horario_saida": "16:00",
+      "horario_chegada": "18:05"
+    },
+    {
+      "origem": "Buenos Aires (AEP)",
+      "destino": "Salvador (SSA)",
+      "data": "18/12/2025",
+      "horario_saida": "19:10",
+      "horario_chegada": "23:30"
+    }
+  ],
+  "hoteis": [
+    {
+      "cidade": "San Carlos de Bariloche",
+      "nome": "NBH | Hotel Premier Bariloche",
+      "noites": 10,
+      "checkin": "08/12/2025",
+      "checkout": "18/12/2025",
+      "regime": "Café da manhã continental"
+    }
+  ],
+  "passeios": [
+    {
+      "nome": "San Martín de los Andes por la Ruta de los 7 Lagos",
+      "valor_por_pessoa": 0,
+      "incluido": true
+    },
+    {
+      "nome": "Circuito Chico-Parada em Campanário-P. Panorâmico",
+      "valor_por_pessoa": 0,
+      "incluido": true
+    },
+    {
+      "nome": "Catamarã Ilha Victoria e Bosque Arrayanes",
+      "valor_por_pessoa": 0,
+      "incluido": true
+    }
+  ],
+  "pacote_base": {
+    "descricao": "Aéreo + Hotel",
+    "valor": 11464
+  },
+  "imagem_hero": "https://pixabay.com/get/g542e9d1c4e633d6be4646b605a351b17a1702bab49b72c0b5cec5e6c6250e31d03f3b38a804575f987138cb30a41be7bd912fbaaa9fbcaa9d859b90156408963_1280.jpg",
+  "imagens_cidades": {
+    "San Carlos de Bariloche": [
+      "https://pixabay.com/get/g9bd513a432a2943aa5c6cd2ba625c04b67c671370ec2ac58f93c0100d09164d2c9bcd8d4e1e3ea176169c1d1c1a219dd901b4dbb19f135e38705ab7b43a08682_1280.jpg",
+      "https://pixabay.com/get/g3b9af6854a7eb4e9260d43bb8a75999ec52f04fb3cbb31b77b26737eb6af4a2504e158dce400fb54d4ba5b6b0efa96788359f2ec589b930fc2e1c7ea81ba1d08_1280.jpg",
+      "https://pixabay.com/get/g12934f927e2a7e3378c891fd9ddc9d85c9a1ab9c4723784db4243931eda5ca6fe4c4669e44b58106477cfaad8d86cb51a8507bff6bf3d93208a8d0190127be5e_1280.jpg"
+    ]
+  },
+  "roteiro": [
+    {
+      "dia": 1,
+      "data": "08/12/2025",
+      "titulo": "Chegada a San Carlos de Bariloche",
+      "landmark": "San Carlos de Bariloche cityscape",
+      "horario": "Chegada às 13:15",
+      "descricao": "Após um voo tranquilo, você chegará ao Aeroporto de San Carlos de Bariloche. Um transfer organizado pela DSC Travel estará esperando para levá-lo ao NBH | Hotel Premier Bariloche, onde fará o check-in e poderá descansar da viagem.\n\nAproveite a primeira noite para explorar os arredores do hotel. Descubra os charmosos restaurantes e cafés locais, ideais para um jantar relaxante e uma introdução à culinária patagônica.",
+      "transfer": "a-incluir",
+      "dica": "Explore o centro histórico de Bariloche a pé; é seguro e oferece belas vistas do lago Nahuel Huapi.",
+      "imagem_dia": "https://pixabay.com/get/g781e9987f67212006906bffc065ea0cc03377a5fed8a064ce4cf9f1db1faf5db85b066b29bcef52bef8a4211ab1f8ad20b051f22e7cdbf5ccab4da6cd93ce459_1280.jpg"
+    },
+    {
+      "dia": 2,
+      "data": "09/12/2025",
+      "titulo": "San Martín de los Andes por la Ruta de los 7 Lagos",
+      "landmark": "Obelisco",
+      "horario": null,
+      "descricao": "Hoje, prepare-se para um dos passeios mais deslumbrantes da região: a viagem por San Martín de los Andes através da famosa Ruta de los 7 Lagos. ✓ San Martín de los Andes por la Ruta de los 7 Lagos incluído.\n\nDurante o passeio, aprecie a beleza natural dos lagos e as paisagens exuberantes da Patagônia. À noite, aproveite para descansar e refletir sobre o dia incrível.",
+      "transfer": null,
+      "dica": "Leve uma câmera e lanches para a viagem - as paradas são mínimas, mas as vistas são espetaculares!",
+      "imagem_dia": "https://pixabay.com/get/gc7914ec09b726e38c79bda4c840333f351f2069d4c91119feff15d10fed8ff6f057e3add020379b2b7fc1fe3fbfc506ecba88a4831951d65dceb46648e99453d_1280.jpg"
+    },
+    {
+      "dia": 3,
+      "data": "10/12/2025",
+      "titulo": "Circuito Chico e Cerro Campanário",
+      "landmark": "Palermo",
+      "horario": null,
+      "descricao": "Pela manhã, embarque no Circuito Chico, uma excursão que proporciona uma visão geral de Bariloche e suas paisagens deslumbrantes. ✓ Circuito Chico-Parada em Campanário-P. Panorâmico incluído.\n\nSuba ao Cerro Campanário para vistas panorâmicas impressionantes. À tarde, explore o centro da cidade e suas lojas de chocolate. Finalize o dia com um jantar em um dos restaurantes locais.",
+      "transfer": null,
+      "dica": "O Cerro Campanário é famoso pelas suas vistas, então não esqueça sua câmera!",
+      "imagem_dia": "https://pixabay.com/get/gfd91bf2e73135c0f73f8b35169baf3b1c70761d0cefb228d8837b52657677df928d9144c119e45c9c9b54f7d797c83e98d3b830a09bc2fc78bed1fa67e95d5cc_1280.jpg"
+    },
+    {
+      "dia": 4,
+      "data": "11/12/2025",
+      "titulo": "Navegação Ilha Victoria e Bosque Arrayanes",
+      "landmark": "La Boca",
+      "horario": null,
+      "descricao": "Navegue até a Ilha Victoria e explore o famoso Bosque de Arrayanes. ✓ Catamarã Ilha Victoria e Bosque Arrayanes incluído.\n\nA bordo do catamarã, desfrute das vistas deslumbrantes do Lago Nahuel Huapi. Passe a tarde caminhando pelas trilhas e descubra a flora e fauna locais. Retorne a Bariloche e relaxe à noite.",
+      "transfer": null,
+      "dica": "Leve roupas confortáveis e protetor solar para o passeio de barco.",
+      "imagem_dia": "https://pixabay.com/get/g306c4ecddea7e77e18795f4d820e7b3b1037fece6f69a33897ae8c3d46727d50bcf6a24a609f6be07e3b21f0454eb979e896f26b7721c19b7a41d8cd6680360c_1280.jpg"
+    },
+    {
+      "dia": 5,
+      "data": "12/12/2025",
+      "titulo": "Explorando o Centro Cívico",
+      "landmark": "Puerto Madero",
+      "horario": null,
+      "descricao": "Passe o dia explorando o Centro Cívico de Bariloche, com sua arquitetura alpina e museus interessantes. Visite o Museu da Patagônia e descubra mais sobre a história e cultura locais.\n\nAproveite para caminhar pela avenida principal e experimentar os famosos chocolates de Bariloche. À noite, jante em um restaurante à beira do lago.",
+      "transfer": null,
+      "dica": "O Centro Cívico é ótimo para compras de souvenirs; não deixe de procurar produtos locais.",
+      "imagem_dia": "https://pixabay.com/get/g900fd78467acf3b7108c0f3cb98f33b83a6f3f6f6367f5a1d61b778d55018d1bfcaa24453e5bb3ec7c0e24d8695ade07bf8547ed57d7b7b94354577c8460576f_1280.jpg"
+    },
+    {
+      "dia": 6,
+      "data": "13/12/2025",
+      "titulo": "Dia Livre para Exploração",
+      "landmark": "Recoleta",
+      "horario": null,
+      "descricao": "Hoje, você tem um dia livre para explorar Bariloche ao seu ritmo. Considere alugar uma bicicleta e explorar as trilhas ao redor do lago ou visitar o Cerro Otto.\n\nÀ tarde, relaxe em uma das praias de seixos ou participe de uma degustação de cerveja artesanal. À noite, aproveite para jantar em um dos muitos restaurantes temáticos da cidade.",
+      "transfer": null,
+      "dica": "As cervejarias locais oferecem tours - uma ótima forma de passar a tarde!",
+      "imagem_dia": "https://pixabay.com/get/g5146d5b2c145fa1e6dcf26e172da581fa09bce8b61cc345013f6fa149dcc7ae73fc2b7599a727d12b164e117fce2c16b6770a338ceae8c3e403e61d1a6322382_1280.jpg"
+    },
+    {
+      "dia": 7,
+      "data": "14/12/2025",
+      "titulo": "Excursão ao Cerro Catedral",
+      "landmark": "San Telmo",
+      "horario": null,
+      "descricao": "Passe o dia explorando o Cerro Catedral, um dos maiores centros de esqui da América do Sul, mesmo fora da temporada de esqui, oferece vistas magníficas e trilhas para caminhadas.\n\nÀ tarde, relaxe em um dos cafés do local e aproveite o ambiente montanhoso. Retorne ao hotel para uma noite tranquila.",
+      "transfer": null,
+      "dica": "Verifique se o teleférico está operando para aproveitar as melhores vistas do cume.",
+      "imagem_dia": "https://pixabay.com/get/g91ce705c65472552e9eed4fb066915b387c6bdf119d24c8a6c0842880669727fff074cbc2ac3c2b25d0c810e5d0a06acd4db240eb22b98a31b087e70d55c5754_1280.jpg"
+    },
+    {
+      "dia": 8,
+      "data": "15/12/2025",
+      "titulo": "Passeio pelo Lago Gutiérrez",
+      "landmark": "Teatro Colón",
+      "horario": null,
+      "descricao": "Hoje, visite o Lago Gutiérrez, um local perfeito para um piquenique ou uma caminhada ao redor da sua bela costa.\n\nPasse a tarde relaxando à beira do lago ou explorando as trilhas próximas. À noite, retorne a Bariloche e aproveite uma degustação de vinhos em um dos bares locais.",
+      "transfer": null,
+      "dica": "Leve um lanche para um piquenique à beira do lago - a paisagem é encantadora!",
+      "imagem_dia": "https://pixabay.com/get/g56d38b6d8c5b75f985f3ff596bad0b0a09d975e9552cfcbe9b3cb256cc351bd9ab8f99fbd08cb7e33645a14d01292091fe20ca969564d2cdd734468a703e44ec_1280.jpg"
+    },
+    {
+      "dia": 9,
+      "data": "16/12/2025",
+      "titulo": "Dia de Compras e Chocolates",
+      "landmark": "Casa Rosada",
+      "horario": null,
+      "descricao": "Dedique o dia às compras no centro de Bariloche. Visite lojas de artesanato e boutiques locais.\n\nExperimente os chocolates artesanais pelas quais Bariloche é famosa. À noite, desfrute de um jantar com vista para o lago em um dos restaurantes refinados da cidade.",
+      "transfer": null,
+      "dica": "Os chocolates de Bariloche são excelentes presentes - compre alguns para levar para casa!",
+      "imagem_dia": "https://pixabay.com/get/g9d79f84fea8a1b5e80198783fd7f1f1f707647e607a548cd3eba69654e2c495f9ff3164c410765cfcf8ec6525ae02ddbcb228e902a764deb3f94160366121c6f_1280.jpg"
+    },
+    {
+      "dia": 10,
+      "data": "17/12/2025",
+      "titulo": "Relaxamento e Spa",
+      "landmark": "Obelisco",
+      "horario": null,
+      "descricao": "No último dia completo, relaxe em um dos spas locais. Aproveite massagens e tratamentos de relaxamento.\n\nÀ tarde, caminhe pelo centro e aprecie a atmosfera tranquila de Bariloche. À noite, escolha um restaurante especial para um jantar de despedida.",
+      "transfer": null,
+      "dica": "Reserve seu tratamento de spa com antecedência para garantir seu horário preferido.",
+      "imagem_dia": "https://pixabay.com/get/gc7914ec09b726e38c79bda4c840333f351f2069d4c91119feff15d10fed8ff6f057e3add020379b2b7fc1fe3fbfc506ecba88a4831951d65dceb46648e99453d_1280.jpg"
+    },
+    {
+      "dia": 11,
+      "data": "18/12/2025",
+      "titulo": "Retorno",
+      "landmark": "San Carlos de Bariloche airport",
+      "horario": "Partida às 16:00",
+      "descricao": "Após o café da manhã, faça o check-out do hotel. Um transfer estará pronto para levá-lo ao Aeroporto de San Carlos de Bariloche para seu voo de retorno.\n\nDespeça-se da bela Bariloche, levando consigo memórias maravilhosas desta viagem.",
+      "transfer": "a-incluir",
+      "dica": "Faça o check-in antecipado online para economizar tempo no aeroporto.",
+      "imagem_dia": "https://pixabay.com/get/gbba6dc8b983ee24ea2ca7a35684ca9b39712f93a1fe0fecd941bdad45006df6f3cc4d6e5bc0b96918b7138f7ad3c99c70b583a7164a633692dfa4f73bb093eff_1280.jpg"
+    }
+  ]
+}

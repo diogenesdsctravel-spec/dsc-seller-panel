@@ -1,0 +1,150 @@
+{
+  "cliente": "Cliente",
+  "periodo": {
+    "inicio": "30/01/2026",
+    "fim": "06/02/2026"
+  },
+  "voos": [
+    {
+      "origem": "Vitória da Conquista (VDC)",
+      "destino": "São Paulo (GRU)",
+      "data": "30/01/2026",
+      "horario_saida": "10:40",
+      "horario_chegada": "12:35"
+    },
+    {
+      "origem": "São Paulo (GRU)",
+      "destino": "Buenos Aires (AEP)",
+      "data": "30/01/2026",
+      "horario_saida": "14:05",
+      "horario_chegada": "17:00"
+    },
+    {
+      "origem": "Buenos Aires (EZE)",
+      "destino": "São Paulo (GRU)",
+      "data": "06/02/2026",
+      "horario_saida": "02:30",
+      "horario_chegada": "05:15"
+    },
+    {
+      "origem": "São Paulo (GRU)",
+      "destino": "Vitória da Conquista (VDC)",
+      "data": "06/02/2026",
+      "horario_saida": "08:00",
+      "horario_chegada": "09:55"
+    }
+  ],
+  "hoteis": [
+    {
+      "cidade": "Buenos Aires",
+      "nome": "Waldorf Hotel",
+      "noites": 7,
+      "checkin": "30/01/2026",
+      "checkout": "06/02/2026",
+      "regime": "Só hospedagem"
+    }
+  ],
+  "passeios": [],
+  "pacote_base": {
+    "descricao": "Aéreo + Hotel",
+    "valor": 7910
+  },
+  "imagem_hero": "https://pixabay.com/get/gf915787c4f6b891cfbc5e6d9b1a5f78a6636243a5f8c0a5995b442f4af05719b45d9959505e01f6bf17859f5e2826cd1f3d28f5a0b0fadd73b2a9877009cc47e_1280.jpg",
+  "imagens_cidades": {
+    "Buenos Aires": [
+      "https://pixabay.com/get/g61c2674e445ac2664a944f057097145c6efdb8f86747bbb5d9100351140ceb36ffcbcb8493aa2153bdc139641289f4e9c928900305bbb88746078f5ff5c7d273_1280.jpg",
+      "https://pixabay.com/get/ge9a5b2ae587d97f1ddb4095a4520b394fc55ba5ddef5b0ab0786a1bf5a51fa024bfe1f5e22504f260b6dc7631354757cd7ad3aabba72ba8b3d8184c39088e62f_1280.jpg",
+      "https://pixabay.com/get/gb64ec23ac8fb12049ce1815853c4e21bd01c3325ceb19bfbfc0ca55d48243480a7dc40ea268884b6499b806818f75d18bf3aad7d729615e5261e9e6c182e60ee_1280.jpg"
+    ]
+  },
+  "roteiro": [
+    {
+      "dia": 1,
+      "data": "30/01",
+      "titulo": "Chegada a Buenos Aires",
+      "landmark": "Buenos Aires cityscape",
+      "horario": "Chegada às 17:00",
+      "descricao": "Ao desembarcar no Aeroporto, um parceiro da DSC Travel estará aguardando para levá-lo ao hotel com conforto e segurança.\n\nApós o check-in, aproveite para descansar e se aclimatar à cidade. Buenos Aires te espera com sua energia vibrante!\n\nPara o jantar, explore os restaurantes do bairro - a culinária local é imperdível.",
+      "transfer": "a-incluir",
+      "dica": "O bairro é perfeito para sua primeira caminhada. Seguro e charmoso!",
+      "imagem_dia": "https://pixabay.com/get/g9f28bc8c1f967c4017f48ad7ddc7455ccb934960a69e097724e95fc7405c5ea53468607211ad8dea29eb68ecc3dcd8c678e52a6dc2c3e2c393f596ecd1817665_1280.jpg"
+    },
+    {
+      "dia": 2,
+      "data": "31/01",
+      "titulo": "City Tour",
+      "landmark": "Obelisco",
+      "horario": null,
+      "descricao": "Comece o dia explorando o coração da cidade. Visite o Obelisco, símbolo icônico de Buenos Aires, e caminhe pela Avenida 9 de Julio.\n\nÀ tarde, faça uma visita guiada ao majestoso Teatro Colón. À noite, aproveite para jantar em Puerto Madero.\n\nBuenos Aires é linda tanto de dia quanto à noite!",
+      "transfer": null,
+      "dica": "Reserve ingressos para o Teatro Colón com antecedência para garantir sua visita.",
+      "imagem_dia": "https://pixabay.com/get/gc7914ec09b726e38c79bda4c840333f351f2069d4c91119feff15d10fed8ff6f057e3add020379b2b7fc1fe3fbfc506ecba88a4831951d65dceb46648e99453d_1280.jpg"
+    },
+    {
+      "dia": 3,
+      "data": "01/02",
+      "titulo": "Explorando Palermo",
+      "landmark": "Palermo",
+      "horario": null,
+      "descricao": "Passe a manhã caminhando pelo bairro de Palermo, conhecido por seus parques e jardins. Visite o Jardim Botânico e o Rosedal.\n\nÀ tarde, explore as boutiques e cafés charmosos de Palermo Soho. À noite, experimente a vibrante vida noturna de Palermo Hollywood.\n\nPalermo é perfeito para quem ama design, gastronomia e cultura.",
+      "transfer": null,
+      "dica": "Use o transporte público para se locomover - é eficiente e econômico.",
+      "imagem_dia": "https://pixabay.com/get/gfd91bf2e73135c0f73f8b35169baf3b1c70761d0cefb228d8837b52657677df928d9144c119e45c9c9b54f7d797c83e98d3b830a09bc2fc78bed1fa67e95d5cc_1280.jpg"
+    },
+    {
+      "dia": 4,
+      "data": "02/02",
+      "titulo": "La Boca e Caminito",
+      "landmark": "La Boca",
+      "horario": null,
+      "descricao": "Explore o bairro colorido de La Boca, famoso por suas casas coloridas e o Caminito. Aproveite para assistir a apresentações de tango nas ruas.\n\nÀ tarde, visite o estádio La Bombonera, casa do Boca Juniors. À noite, jante em um dos tradicionais restaurantes de parrilla.\n\nLa Boca oferece uma experiência autêntica e cultural.",
+      "transfer": null,
+      "dica": "Evite visitar La Boca à noite; a segurança é melhor durante o dia.",
+      "imagem_dia": "https://pixabay.com/get/g306c4ecddea7e77e18795f4d820e7b3b1037fece6f69a33897ae8c3d46727d50bcf6a24a609f6be07e3b21f0454eb979e896f26b7721c19b7a41d8cd6680360c_1280.jpg"
+    },
+    {
+      "dia": 5,
+      "data": "03/02",
+      "titulo": "Descobrindo Recoleta",
+      "landmark": "Recoleta",
+      "horario": null,
+      "descricao": "Comece o dia no Cemitério da Recoleta, famoso por suas esculturas e mausoléus. Não perca o túmulo de Eva Perón.\n\nApós o almoço, visite o Museu Nacional de Belas Artes. À noite, explore as cafeterias ao redor, perfeitas para uma pausa relaxante.\n\nRecoleta é um mergulho na história e na arte de Buenos Aires.",
+      "transfer": null,
+      "dica": "Visite o cemitério durante a semana para evitar multidões.",
+      "imagem_dia": "https://pixabay.com/get/g5146d5b2c145fa1e6dcf26e172da581fa09bce8b61cc345013f6fa149dcc7ae73fc2b7599a727d12b164e117fce2c16b6770a338ceae8c3e403e61d1a6322382_1280.jpg"
+    },
+    {
+      "dia": 6,
+      "data": "04/02",
+      "titulo": "Dia em Puerto Madero",
+      "landmark": "Puerto Madero",
+      "horario": null,
+      "descricao": "Passe a manhã caminhando ao longo das docas de Puerto Madero, o bairro mais moderno da cidade.\n\nAlmoce em um dos sofisticados restaurantes à beira-mar e, à tarde, visite a Reserva Ecológica Costanera Sur.\n\nÀ noite, aproveite para assistir a um show de tango em um dos muitos teatros da região.",
+      "transfer": null,
+      "dica": "Reserve um jantar com vista para a Puente de la Mujer para uma experiência inesquecível.",
+      "imagem_dia": "https://pixabay.com/get/g900fd78467acf3b7108c0f3cb98f33b83a6f3f6f6367f5a1d61b778d55018d1bfcaa24453e5bb3ec7c0e24d8695ade07bf8547ed57d7b7b94354577c8460576f_1280.jpg"
+    },
+    {
+      "dia": 7,
+      "data": "05/02",
+      "titulo": "Feira de San Telmo",
+      "landmark": "San Telmo",
+      "horario": null,
+      "descricao": "Aos domingos, San Telmo ganha vida com sua famosa feira de antiguidades. Caminhe pelas ruas de paralelepípedos e descubra tesouros únicos.\n\nÀ tarde, visite o Museu de Arte Moderna de Buenos Aires. À noite, celebre sua última noite com um jantar em um dos tradicionais bistrôs do bairro.\n\nSan Telmo é o lugar perfeito para experimentar o charme antigo de Buenos Aires.",
+      "transfer": null,
+      "dica": "Chegue cedo à feira para evitar as multidões e encontrar as melhores peças.",
+      "imagem_dia": "https://pixabay.com/get/g91ce705c65472552e9eed4fb066915b387c6bdf119d24c8a6c0842880669727fff074cbc2ac3c2b25d0c810e5d0a06acd4db240eb22b98a31b087e70d55c5754_1280.jpg"
+    },
+    {
+      "dia": 8,
+      "data": "06/02",
+      "titulo": "Retorno",
+      "landmark": "Buenos Aires airport",
+      "horario": "Partida às 02:30",
+      "descricao": "Após o check-out, um transfer o levará ao aeroporto para seu voo de retorno.\n\nDespeça-se de Buenos Aires, levando na bagagem memórias inesquecíveis dessa cidade vibrante e acolhedora.\n\nEspero que tenha aproveitado cada momento desta viagem!",
+      "transfer": "a-incluir",
+      "dica": "Considere fazer o check-in online para economizar tempo no aeroporto.",
+      "imagem_dia": "https://pixabay.com/get/gbd8ad5596a1039c66e00f984801de8784943effa2ab8912b1febdff8763277b69568bb826b2ca6d2e57c09915898711d7d1e4842c5fcc04f4228ec50cda01c1d_1280.jpg"
+    }
+  ]
+}

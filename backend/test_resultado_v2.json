@@ -1,0 +1,29 @@
+[
+  {
+    "dia": 1,
+    "data": "15/01",
+    "titulo": "Chegada a San Carlos de Bariloche",
+    "landmark": "San Carlos de Bariloche cityscape",
+    "descricao": "Chegada ao aeroporto de San Carlos de Bariloche e traslado ao hotel. Aproveite para explorar a cidade e apreciar a vista panorâmica.",
+    "dica": "Centro Cívico é lindo à tarde",
+    "imagem_dia": "https://images.unsplash.com/photo-1720220951922-5ad90640b3bb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDE2Njd8MHwxfHNlYXJjaHw1fHxTYW4lMjBDYXJsb3MlMjBkZSUyMEJhcmlsb2NoZSUyMGNpdHlzY2FwZSUyMEJhcmlsb2NoZSUyMEFyZ2VudGluYSUyMHRyYXZlbCUyMHBob3RvZ3JhcGh5JTIwbGFuZHNjYXBlJTIwY2luZW1hdGljJTIwbW91bnRhaW5zJTIwcHJlbWl1bSUyMDRrfGVufDF8MHx8fDE3NjU1NzU5Mjl8MA&ixlib=rb-4.1.0&q=80&w=1080"
+  },
+  {
+    "dia": 2,
+    "data": "16/01",
+    "titulo": "Explorando Bariloche",
+    "landmark": "Cerro Catedral, Circuito Chico, Centro Cívico Bariloche, Lago Nahuel Huapi",
+    "descricao": "Comece o dia no Cerro Catedral para atividades de montanha. À tarde, faça o famoso Circuito Chico, visitando o Centro Cívico e apreciando o Lago Nahuel Huapi.",
+    "dica": "Pare no Punto Panorámico para fotos incríveis",
+    "imagem_dia": "https://images.pexels.com/photos/27999861/pexels-photo-27999861.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"
+  },
+  {
+    "dia": 3,
+    "data": "17/01",
+    "titulo": "Retorno",
+    "landmark": "San Carlos de Bariloche airport",
+    "descricao": "Check-out do hotel e traslado ao aeroporto de San Carlos de Bariloche para o voo de retorno.",
+    "dica": "Aeroporto fica a 15km do centro",
+    "imagem_dia": "https://images.unsplash.com/photo-1668293498094-9f7cd1d64e4a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDE2Njd8MHwxfHNlYXJjaHw0fHxTYW4lMjBDYXJsb3MlMjBkZSUyMEJhcmlsb2NoZSUyMGFpcnBvcnQlMjBCYXJpbG9jaGUlMjBBcmdlbnRpbmElMjB0cmF2ZWwlMjBwaG90b2dyYXBoeSUyMGxhbmRzY2FwZSUyMGNpbmVtYXRpYyUyMG1vdW50YWlucyUyMHByZW1pdW0lMjA0a3xlbnwxfDB8fHwxNzY1NTc1OTMyfDA&ixlib=rb-4.1.0&q=80&w=1080"
+  }
+]

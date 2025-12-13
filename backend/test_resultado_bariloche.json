@@ -1,0 +1,35 @@
+[
+  {
+    "dia": 1,
+    "data": "15/01",
+    "titulo": "Chegada a San Carlos de Bariloche",
+    "landmark": "San Carlos de Bariloche cityscape",
+    "horario": "Chegada às 14:00",
+    "descricao": "Ao chegar em San Carlos de Bariloche, um transfer estará aguardando para levá-lo ao Hotel Bariloche, onde você irá se hospedar por duas noites.\n\nApós o check-in, aproveite a tarde para explorar os arredores do hotel e se familiarizar com a cidade. À noite, escolha um dos restaurantes próximos para jantar e relaxar após a viagem.\n\nBariloche é conhecido por sua hospitalidade e culinária deliciosa, especialmente os pratos com truta e cordeiro.",
+    "transfer": "a-incluir",
+    "dica": "O bairro do hotel é conhecido por sua segurança e charme, ideal para caminhadas noturnas tranquilas.",
+    "imagem_dia": "https://pixabay.com/get/ga82229ceccac28f5018f9c6ce5fa8c80abcdac1e65e6d0291fe74ee815166c3883c2e8c71f8765b164c204fd32afd5a48f047c6739cae83ae72eed74774f530d_1280.jpg"
+  },
+  {
+    "dia": 2,
+    "data": "16/01",
+    "titulo": "Explorando o Centro Cívico e a Natureza",
+    "landmark": "Obelisco",
+    "horario": null,
+    "descricao": "Comece o dia visitando o Centro Cívico, um dos pontos mais icônicos de Bariloche. Admire a arquitetura e explore os museus e lojas de artesanato local.\n\nÀ tarde, faça um passeio pelos arredores do Lago Nahuel Huapi. Se o tempo permitir, uma caminhada pelo Circuito Chico oferece vistas panorâmicas espetaculares.\n\nÀ noite, experimente um jantar em um dos restaurantes do centro, onde a culinária patagônica se destaca.",
+    "transfer": null,
+    "dica": "Leve uma jaqueta leve, pois o clima pode mudar rapidamente, especialmente perto do lago.",
+    "imagem_dia": "https://pixabay.com/get/gdceca7799bc55004ac8ecc630f2b96ad00b11c8302ab5b225e372b3b67def662be6e4555c6cae7e1e1e4b7914c1b2ed07f260e77a678c2cb25e75fde44011ed1_1280.jpg"
+  },
+  {
+    "dia": 3,
+    "data": "17/01",
+    "titulo": "Retorno",
+    "landmark": "San Carlos de Bariloche airport",
+    "horario": "Partida às 16:00",
+    "descricao": "No último dia, aproveite a manhã para fazer compras de última hora ou uma caminhada tranquila pelo centro.\n\nApós o check-out no hotel, o transfer estará disponível para levá-lo ao aeroporto, garantindo um retorno seguro e confortável.\n\nDespeça-se de Bariloche com uma última refeição leve e aproveite a vista das montanhas enquanto se dirige ao aeroporto.",
+    "transfer": "a-incluir",
+    "dica": "Faça o check-in antecipado online para evitar filas e garantir um assento de sua preferência.",
+    "imagem_dia": "https://pixabay.com/get/gbaeab4d334baa2911c334da5abffcd4fa01da96be5a25c7a1193cc5b56a322bdc67ce99e322786e20f14523905e969ee55dfb58b0b563b663f139c3718fd5243_1280.jpg"
+  }
+]

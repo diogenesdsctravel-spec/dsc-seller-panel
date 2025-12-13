@@ -1,0 +1,47 @@
+[
+  {
+    "dia": 1,
+    "data": "15/01",
+    "titulo": "Chegada a San Carlos de Bariloche",
+    "landmark": "San Carlos de Bariloche cityscape",
+    "descricao": "Chegada ao aeroporto de San Carlos de Bariloche e traslado para o hotel. Aproveite o restante do dia para explorar a cidade e apreciar a vista panorâmica da paisagem urbana.",
+    "dica": "Centro Cívico é lindo à tarde",
+    "imagem_dia": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1200"
+  },
+  {
+    "dia": 2,
+    "data": "16/01",
+    "titulo": "Explorando Bariloche",
+    "landmark": "Cerro Catedral",
+    "descricao": "Passe o dia no Cerro Catedral, um dos maiores centros de esqui da América do Sul. Aproveite para esquiar ou simplesmente apreciar a vista das montanhas.",
+    "dica": "Leve roupas quentes, mesmo no verão.",
+    "imagem_dia": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1200"
+  },
+  {
+    "dia": 2,
+    "data": "16/01",
+    "titulo": "Circuito Chico",
+    "landmark": "Circuito Chico",
+    "descricao": "Faça o famoso Circuito Chico, uma rota cênica que passa por pontos turísticos como o Lago Nahuel Huapi e o Hotel Llao Llao.",
+    "dica": "Pare no Punto Panorámico para fotos incríveis.",
+    "imagem_dia": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1200"
+  },
+  {
+    "dia": 2,
+    "data": "16/01",
+    "titulo": "Centro Cívico Bariloche",
+    "landmark": "Centro Cívico Bariloche",
+    "descricao": "Visite o Centro Cívico de Bariloche, um conjunto arquitetônico emblemático da cidade, e explore suas lojas e museus.",
+    "dica": "Experimente o chocolate artesanal local.",
+    "imagem_dia": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1200"
+  },
+  {
+    "dia": 3,
+    "data": "17/01",
+    "titulo": "Retorno",
+    "landmark": "San Carlos de Bariloche airport",
+    "descricao": "Check-out do hotel e traslado para o aeroporto de San Carlos de Bariloche para o voo de retorno.",
+    "dica": "Aeroporto fica a 15km do centro",
+    "imagem_dia": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1200"
+  }
+]
