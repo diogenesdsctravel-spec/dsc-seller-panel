@@ -1,7 +1,17 @@
-from image_search import get_hero_image_for_trip, get_images_for_all_cities
-
 from dotenv import load_dotenv
 load_dotenv()
+
+# Tentativa de importar as funções de imagem
+try:
+    from image_search import get_hero_image_for_trip, get_images_for_all_cities
+except ImportError as e:
+    print(f"⚠️ Erro ao importar image_search: {e}. Recursos de imagem serão desabilitados.")
+
+    def get_hero_image_for_trip(destinations):
+        return None
+
+    def get_images_for_all_cities(destinations):
+        return {}
 
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
@@ -25,7 +35,7 @@ app.add_middleware(
         "https://dsc-seller-panel-eta.vercel.app",
         "https://painel.dsctravel.com.br",
         "http://localhost:5173",
-        "http://localhost:5174"
+        "http://localhost:5174",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -56,29 +66,31 @@ class UploadResponse(BaseModel):
 
 def extract_cities_from_trip(trip: Dict[str, Any]) -> List[str]:
     """Extrai lista de cidades de um objeto de viagem."""
-    cidades = []
+    cidades: List[str] = []
 
-    # Tenta extrair de "destinations"
     destinos = trip.get("destinations") or trip.get("destinos") or []
-    if isinstance(destinos, list):
+    if isinstance(destinos, List):
         for d in destinos:
-            if isinstance(d, dict):
-                nome = d.get("city") or d.get("cidade") or d.get("name") or d.get("nome")
+            if isinstance(d, Dict):
+                nome = (
+                    d.get("city")
+                    or d.get("cidade")
+                    or d.get("name")
+                    or d.get("nome")
+                )
                 if nome and nome not in cidades:
                     cidades.append(str(nome))
         if cidades:
             return cidades
 
-    # Tenta extrair de "days"
     dias = trip.get("days") or trip.get("dias") or []
-    if isinstance(dias, list):
+    if isinstance(dias, List):
         for dia in dias:
-            if isinstance(dia, dict):
+            if isinstance(dia, Dict):
                 cidade = dia.get("city") or dia.get("cidade")
                 if cidade and cidade not in cidades:
                     cidades.append(str(cidade))
 
-    # Cidade única no root
     unica = trip.get("city") or trip.get("cidade")
     if unica:
         cidades.append(str(unica))
@@ -102,7 +114,7 @@ async def upload_files(files: List[UploadFile] = File(...)):
     trip_folder = UPLOADS_DIR / trip_id
     trip_folder.mkdir(exist_ok=True)
 
-    saved_files = []
+    saved_files: List[str] = []
 
     try:
         for file in files:
@@ -115,7 +127,7 @@ async def upload_files(files: List[UploadFile] = File(...)):
             trip_id=trip_id,
             status="uploaded",
             message=f"{len(saved_files)} arquivo(s) enviado(s) com sucesso",
-            files=saved_files
+            files=saved_files,
         )
 
     except Exception as e:
@@ -126,7 +138,7 @@ async def upload_files(files: List[UploadFile] = File(...)):
 def get_trip(trip_id: str):
     """
     Retorna dados de uma viagem.
-    Automaticamente busca imagens hero e por cidade.
+    Automaticamente busca imagens hero e por cidade (se o módulo de imagens estiver disponível).
     """
     if trip_id == "demo":
         try:
@@ -140,7 +152,9 @@ def get_trip(trip_id: str):
         extracao_file = EXTRACAO_DIR / f"{trip_id}.json"
 
         if not extracao_file.exists():
-            raise HTTPException(status_code=404, detail=f"Viagem {trip_id} não encontrada")
+            raise HTTPException(
+                status_code=404, detail=f"Viagem {trip_id} não encontrada"
+            )
 
         try:
             with open(extracao_file, "r", encoding="utf-8") as f:
@@ -148,7 +162,6 @@ def get_trip(trip_id: str):
         except json.JSONDecodeError:
             raise HTTPException(status_code=500, detail="Erro ao ler dados")
 
-    # Extrair cidades e buscar imagens
     cidades = extract_cities_from_trip(data)
 
     if cidades:
@@ -183,7 +196,7 @@ async def extract_trip_data(trip_id: str):
         return {
             "trip_id": trip_id,
             "status": "extracted",
-            "message": "Dados extraídos com sucesso"
+            "message": "Dados extraídos com sucesso",
         }
 
     except Exception as e:
@@ -192,4 +205,5 @@ async def extract_trip_data(trip_id: str):
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

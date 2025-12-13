@@ -9,12 +9,14 @@ interface DiaRoteiro {
     descricao: string;
     transfer?: "incluido" | "a-incluir" | null;
     dica?: string;
+    landmark?: string;
+    imagem_dia?: string;
 }
 
 interface RoteiroScreenProps {
     dias: DiaRoteiro[];
     imagensCidades: Record<string, string[]>;
-    onBack: () => void; // usado no botão "Voltar ao Início"
+    onBack: () => void;
 }
 
 export function RoteiroScreen({
@@ -39,8 +41,9 @@ export function RoteiroScreen({
     const proximoDia =
         diaAtual < dias.length - 1 ? dias[diaAtual + 1] : null;
 
+    // Usar foto específica do dia se existir, senão fallback para cityImages
     const todasFotos = Object.values(imagensCidades).flat();
-    const imagemUrl =
+    const imagemUrl = dia.imagem_dia ||
         todasFotos[diaAtual % (todasFotos.length || 1)] ||
         "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1200";
 
