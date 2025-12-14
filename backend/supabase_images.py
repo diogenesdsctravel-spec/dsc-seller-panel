@@ -44,20 +44,7 @@ FALLBACK_URL = IMAGE_CONFIG.FALLBACK_URL
 # ============================================================================
 
 def _validate_string_input(value: Any, param_name: str) -> str:
-    """
-    Valida e normaliza input de string.
-    
-    Args:
-        value: Valor a validar
-        param_name: Nome do parâmetro (para mensagens de erro)
-    
-    Returns:
-        String limpa e validada
-    
-    Raises:
-        ValueError: Se valor for None ou vazio
-        TypeError: Se valor não for string
-    """
+    """Valida e normaliza input de string"""
     if value is None:
         raise ValueError(f"{param_name} não pode ser None")
     
@@ -84,11 +71,9 @@ def _normalize(text: str) -> str:
     
     text = text.lower()
     
-    # Remove stopwords configuráveis
     for stopword in IMAGE_CONFIG.STOPWORDS:
         text = text.replace(stopword, "")
     
-    # Mantém apenas letras, números e espaços
     cleaned = []
     for ch in text:
         if ch.isalnum() or ch.isspace():
@@ -102,10 +87,7 @@ def _normalize(text: str) -> str:
 # ============================================================================
 
 class ImageManager:
-    """
-    Gerenciador de imagens com dependencies injetadas.
-    Permite testes e configuração flexível.
-    """
+    """Gerenciador de imagens com dependencies injetadas"""
     
     def __init__(
         self,
@@ -113,19 +95,10 @@ class ImageManager:
         openai_client: Optional[OpenAI] = None,
         config = IMAGE_CONFIG
     ):
-        """
-        Inicializa o ImageManager.
-        
-        Args:
-            supabase_client: Cliente Supabase (opcional, será criado se None)
-            openai_client: Cliente OpenAI (opcional, será criado se None)
-            config: Configurações (padrão: IMAGE_CONFIG)
-        """
         self.config = config
         self.db = supabase_client
         self.ai = openai_client
         
-        # Lazy initialization
         if self.db is None:
             self.db = self._init_supabase()
         
@@ -172,9 +145,7 @@ class ImageManager:
         city: str, 
         alvo_landmark: Optional[str] = None
     ) -> Optional[str]:
-        """
-        Fallback inteligente: pega QUALQUER imagem da cidade com melhor score.
-        """
+        """Fallback inteligente: pega QUALQUER imagem da cidade com melhor score"""
         if not self.db:
             return None
 
@@ -244,10 +215,7 @@ class ImageManager:
         city: str, 
         landmark_buscado: str
     ) -> Optional[str]:
-        """
-        Usa IA para encontrar o landmark correto via matching semântico.
-        """
-        # Validação
+        """Usa IA para encontrar o landmark correto via matching semântico"""
         try:
             city = _validate_string_input(city, "city")
             landmark_buscado = _validate_string_input(landmark_buscado, "landmark_buscado")
@@ -278,7 +246,6 @@ class ImageManager:
             if not landmarks_disponiveis:
                 return None
 
-            # Fast path
             if landmark_buscado in landmarks_disponiveis:
                 return landmark_buscado
 
@@ -339,10 +306,7 @@ Retorne APENAS o nome exato do landmark da lista, ou "NENHUM"."""
             return None
     
     def buscar_imagem(self, city: str, landmark: str) -> Optional[str]:
-        """
-        Busca imagem curada no Supabase com matching semântico via IA.
-        """
-        # Validação
+        """Busca imagem curada no Supabase com matching semântico via IA"""
         try:
             city = _validate_string_input(city, "city")
             landmark = _validate_string_input(landmark, "landmark")
@@ -355,7 +319,6 @@ Retorne APENAS o nome exato do landmark da lista, ou "NENHUM"."""
             return None
 
         try:
-            # 1) Match exato
             result = (
                 self.db.table("destination_images")
                 .select("image_url, description, landmark")
@@ -373,7 +336,6 @@ Retorne APENAS o nome exato do landmark da lista, ou "NENHUM"."""
                     logger.debug(f"   Desc: {desc[:60]}")
                 return img.get("image_url")
 
-            # 2) Matching semântico
             landmark_correto = self.encontrar_landmark_semantico(city, landmark)
 
             if landmark_correto:
@@ -397,7 +359,6 @@ Retorne APENAS o nome exato do landmark da lista, ou "NENHUM"."""
                         logger.debug(f"   Desc: {desc[:60]}")
                     return img.get("image_url")
 
-            # 3) Fallback inteligente
             url = self._buscar_qualquer_imagem_da_cidade(city, alvo_landmark=landmark)
             if url:
                 return url
@@ -417,7 +378,6 @@ Retorne APENAS o nome exato do landmark da lista, ou "NENHUM"."""
         description: Optional[str] = None,
     ) -> bool:
         """Salva imagem no Supabase"""
-        # Validação
         try:
             city = _validate_string_input(city, "city")
             landmark = _validate_string_input(landmark, "landmark")
@@ -537,10 +497,128 @@ Retorne APENAS o nome exato do landmark da lista, ou "NENHUM"."""
 
 
 # ============================================================================
-# INTERFACE DE COMPATIBILIDADE (mantém código legado funcionando)
+# BUSCA SEM REPETIÇÃO (para roteiros)
 # ============================================================================
 
-# Instância global padrão
+def buscar_imagem_para_dia(
+    cidade: str,
+    landmark: str,
+    used_image_ids: Set[str],
+    manager: Optional[ImageManager] = None
+) -> Optional[Dict[str, Any]]:
+    """
+    Busca imagem para um dia específico do roteiro, evitando repetições.
+    
+    Returns:
+        Dict com 'id', 'image_url', 'landmark' ou None
+    """
+    if manager is None:
+        manager = _get_manager()
+    
+    if not manager.db:
+        logger.error("Supabase não disponível")
+        return None
+    
+    try:
+        cidade = _validate_string_input(cidade, "cidade")
+        landmark = _validate_string_input(landmark, "landmark")
+    except (ValueError, TypeError) as e:
+        logger.error(f"Input inválido: {e}")
+        return None
+    
+    try:
+        candidatos: List[Dict[str, Any]] = []
+        
+        # 1) Match exato
+        result = (
+            manager.db.table("destination_images")
+            .select("id, image_url, landmark, city, quality")
+            .eq("city", cidade)
+            .eq("landmark", landmark)
+            .order("quality", desc=True)
+            .execute()
+        )
+        if result.data:
+            candidatos.extend(result.data)
+        
+        # 2) Matching semântico
+        landmark_correto = manager.encontrar_landmark_semantico(cidade, landmark)
+        if landmark_correto and landmark_correto != landmark:
+            result = (
+                manager.db.table("destination_images")
+                .select("id, image_url, landmark, city, quality")
+                .eq("city", cidade)
+                .eq("landmark", landmark_correto)
+                .order("quality", desc=True)
+                .execute()
+            )
+            if result.data:
+                candidatos.extend(result.data)
+        
+        # 3) City fallback
+        result = (
+            manager.db.table("destination_images")
+            .select("id, image_url, landmark, city, quality")
+            .eq("city", cidade)
+            .order("quality", desc=True)
+            .limit(IMAGE_CONFIG.CITY_IMAGES_LIMIT)
+            .execute()
+        )
+        if result.data:
+            candidatos.extend(result.data)
+        
+        if not candidatos:
+            logger.warning(f"Nenhuma imagem encontrada para {cidade} - {landmark}")
+            return None
+        
+        # Remover duplicatas
+        seen_ids = set()
+        candidatos_unicos = []
+        for img in candidatos:
+            img_id = str(img.get("id"))
+            if img_id not in seen_ids:
+                seen_ids.add(img_id)
+                candidatos_unicos.append(img)
+        
+        # Ordenar por qualidade
+        candidatos_unicos.sort(
+            key=lambda x: float(x.get("quality") or 0), 
+            reverse=True
+        )
+        
+        # Filtrar não usadas
+        nao_usadas = [
+            img for img in candidatos_unicos 
+            if str(img.get("id")) not in used_image_ids
+        ]
+        
+        if nao_usadas:
+            escolhida = nao_usadas[0]
+            used_image_ids.add(str(escolhida["id"]))
+            logger.info(
+                f"💎 [SEM REPETIÇÃO] {cidade} - {escolhida['landmark']} "
+                f"(ID: {escolhida['id']})"
+            )
+            return escolhida
+        
+        # Todas já usadas, pega a melhor
+        escolhida = candidatos_unicos[0]
+        used_image_ids.add(str(escolhida["id"]))
+        logger.warning(
+            f"⚠️ [REPETINDO] {cidade} - {escolhida['landmark']} "
+            f"(ID: {escolhida['id']})"
+        )
+        return escolhida
+    
+    except Exception as e:
+        logger.error(f"Erro em buscar_imagem_para_dia: {e}")
+        return None
+
+
+# ============================================================================
+# INTERFACE DE COMPATIBILIDADE
+# ============================================================================
+
 _default_manager: Optional[ImageManager] = None
 
 def _get_manager() -> ImageManager:
@@ -551,7 +629,6 @@ def _get_manager() -> ImageManager:
     return _default_manager
 
 
-# Funções legacy que delegam para o manager
 def buscar_imagem(city: str, landmark: str) -> Optional[str]:
     """Wrapper para compatibilidade"""
     return _get_manager().buscar_imagem(city, landmark)
@@ -597,17 +674,13 @@ if __name__ == "__main__":
     logger.info("🧪 TESTE DE COMPATIBILIDADE")
     logger.info("=" * 70)
 
-    logger.info("\n1️⃣ Teste com funções legacy (compatibilidade):")
-    url = buscar_imagem("Buenos Aires", "Ponte da Mulher")
-    logger.info(f"Legacy function → {url}\n")
+    logger.info("\n1️⃣ Funções legacy:")
+    url = buscar_imagem("Buenos Aires", "Obelisco")
+    logger.info(f"Legacy → {url}\n")
 
-    logger.info("2️⃣ Teste com ImageManager direto:")
+    logger.info("2️⃣ ImageManager direto:")
     manager = ImageManager()
-    url2 = manager.buscar_imagem("Buenos Aires", "Buenos Aires cityscape")
-    logger.info(f"Manager class → {url2}\n")
-
-    logger.info("3️⃣ Teste hero image:")
-    hero = get_hero_image_for_trip(["Buenos Aires"])
-    logger.info(f"Hero → {hero}\n")
+    url2 = manager.buscar_imagem("Buenos Aires", "Palermo")
+    logger.info(f"Manager → {url2}\n")
 
     logger.info("=" * 70)
