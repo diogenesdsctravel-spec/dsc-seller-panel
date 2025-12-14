@@ -3,12 +3,23 @@ Gera roteiro dia-a-dia usando OpenAI GPT-4.
 """
 
 import os
+import json
+import logging
 from openai import OpenAI
 from datetime import datetime, timedelta
-import json
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# ============================================================================
+# CONFIGURAÇÃO DE LOGGING
+# ============================================================================
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 
 def generate_itinerary(trip_data: dict) -> list[dict]:
@@ -24,7 +35,7 @@ def generate_itinerary(trip_data: dict) -> list[dict]:
     
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
-        print("⚠️ OPENAI_API_KEY não configurada")
+        logger.error("❌ OPENAI_API_KEY não configurada")
         return []
     
     client = OpenAI(api_key=api_key)
@@ -140,7 +151,7 @@ FORMATO JSON (retorne APENAS JSON array limpo, sem ```json):
 IMPORTANTE: CADA DIA DEVE TER UM LANDMARK DIFERENTE para garantir variedade visual nas fotos!"""
 
     try:
-        print("🤖 Chamando OpenAI...")
+        logger.info("🤖 Chamando OpenAI para gerar roteiro...")
         
         response = client.chat.completions.create(
             model="gpt-4o",
@@ -160,8 +171,7 @@ IMPORTANTE: CADA DIA DEVE TER UM LANDMARK DIFERENTE para garantir variedade visu
         
         result_text = response.choices[0].message.content.strip()
         
-        print("✅ Resposta recebida")
-        print(f"📏 Tamanho: {len(result_text)} caracteres")
+        logger.info(f"✅ Resposta recebida ({len(result_text)} caracteres)")
         
         # Limpar markdown se houver
         if result_text.startswith("```"):
@@ -172,25 +182,25 @@ IMPORTANTE: CADA DIA DEVE TER UM LANDMARK DIFERENTE para garantir variedade visu
         dias = json.loads(result_text)
         
         if not isinstance(dias, list):
-            print(f"❌ Não é lista, é {type(dias)}")
+            logger.error(f"❌ Resposta não é lista, é {type(dias)}")
             return []
         
-        print(f"✅ Roteiro gerado com {len(dias)} dias")
+        logger.info(f"✅ Roteiro gerado com {len(dias)} dias")
         
         # Validar que todos os dias têm landmark
         for dia in dias:
             if "landmark" not in dia:
-                print(f"⚠️ Dia {dia.get('dia')} sem landmark, adicionando genérico")
+                logger.warning(f"⚠️ Dia {dia.get('dia')} sem landmark, adicionando genérico")
                 dia["landmark"] = f"{cidade_principal} cityscape"
         
         return dias
         
     except json.JSONDecodeError as e:
-        print(f"❌ JSON inválido: {e}")
-        print(f"Primeiros 300 chars: {result_text[:300]}")
+        logger.error(f"❌ JSON inválido: {e}")
+        logger.debug(f"Primeiros 300 chars: {result_text[:300]}")
         return []
     except Exception as e:
-        print(f"❌ Erro: {e}")
+        logger.error(f"❌ Erro ao gerar roteiro: {e}")
         import traceback
         traceback.print_exc()
         return []
@@ -209,6 +219,14 @@ if __name__ == "__main__":
         "passeios": []
     }
     
+    logger.info("=" * 70)
+    logger.info("🧪 TESTE DE GERAÇÃO DE ROTEIRO")
+    logger.info("=" * 70)
+    
     roteiro = generate_itinerary(test_data)
-    print("\n📋 ROTEIRO GERADO:")
-    print(json.dumps(roteiro, indent=2, ensure_ascii=False))
+    
+    if roteiro:
+        logger.info(f"\n📋 ROTEIRO GERADO ({len(roteiro)} dias):")
+        logger.info(json.dumps(roteiro, indent=2, ensure_ascii=False))
+    else:
+        logger.error("❌ Falha ao gerar roteiro")
