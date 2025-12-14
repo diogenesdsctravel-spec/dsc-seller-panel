@@ -35,17 +35,25 @@ export function AppPreview({ tripData }: AppPreviewProps) {
 
     const cities = extractCities(tripData || {});
 
-    const citiesWithImages = cities.map((city, index) => ({
+    const fallbackImage =
+        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80";
+
+    const heroImage =
+        tripData?.imagem_hero ||
+        tripData?.heroImage ||
+        fallbackImage;
+
+    const cityImages: Record<string, string> =
+        tripData?.imagens_cidades ||
+        tripData?.cityImages ||
+        {};
+
+    const citiesWithImages = cities.map((city) => ({
         ...city,
-        imageUrl:
-            index === 0 && tripData?.imagem_hero
-                ? tripData.imagem_hero
-                : "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+        imageUrl: cityImages[city.name] || heroImage,
     }));
 
     const cliente = tripData?.cliente || "Cliente";
-    const imagemHero = tripData?.imagem_hero;
-
     const destinos =
         tripData?.hoteis?.map((h: any) => h.cidade).filter(Boolean) || [];
     const destinosTexto =
@@ -85,8 +93,6 @@ export function AppPreview({ tripData }: AppPreviewProps) {
             setPreviewScreen("hero");
             setCurrentScreen("produtos");
         }
-
-        // orcamento e conta ainda não navegam
     }
 
     return (
@@ -116,9 +122,9 @@ export function AppPreview({ tripData }: AppPreviewProps) {
                                     {currentScreen === "hero" && (
                                         <>
                                             <div className="relative h-[450px] overflow-hidden rounded-b-[32px]">
-                                                {imagemHero ? (
+                                                {heroImage ? (
                                                     <img
-                                                        src={imagemHero}
+                                                        src={heroImage}
                                                         alt="Destino"
                                                         className="w-full h-full object-cover"
                                                     />
@@ -251,7 +257,8 @@ export function AppPreview({ tripData }: AppPreviewProps) {
                                                     className="w-full mt-8 text-white rounded-[16px] px-8 py-5 text-[17px] transition-all"
                                                     style={{
                                                         background: "#09077D",
-                                                        boxShadow: "0 8px 24px rgba(9, 7, 125, 0.35)",
+                                                        boxShadow:
+                                                            "0 8px 24px rgba(9, 7, 125, 0.35)",
                                                     }}
                                                 >
                                                     Ver Detalhes da Viagem

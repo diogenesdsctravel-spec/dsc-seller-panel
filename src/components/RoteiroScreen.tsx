@@ -15,7 +15,7 @@ interface DiaRoteiro {
 
 interface RoteiroScreenProps {
     dias: DiaRoteiro[];
-    imagensCidades: Record<string, string[]>;
+    imagensCidades: Record<string, string>;
     onBack: () => void;
 }
 
@@ -41,11 +41,18 @@ export function RoteiroScreen({
     const proximoDia =
         diaAtual < dias.length - 1 ? dias[diaAtual + 1] : null;
 
-    // Usar foto específica do dia se existir, senão fallback para cityImages
-    const todasFotos = Object.values(imagensCidades).flat();
-    const imagemUrl = dia.imagem_dia ||
-        todasFotos[diaAtual % (todasFotos.length || 1)] ||
+    const todasFotos = Object.values(imagensCidades).filter(
+        (v) => typeof v === "string" && v.trim().length > 0
+    );
+
+    const fallbackImage =
         "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1200";
+
+    const imagemUrl =
+        dia.imagem_dia ||
+        (todasFotos.length
+            ? todasFotos[diaAtual % todasFotos.length]
+            : fallbackImage);
 
     return (
         <div className="bg-[#F7F7F7] min-h-full">

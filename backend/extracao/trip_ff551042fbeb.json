@@ -1,0 +1,146 @@
+{
+  "cliente": "Cliente",
+  "periodo": {
+    "inicio": "30/01/2026",
+    "fim": "06/02/2026"
+  },
+  "voos": [
+    {
+      "origem": "Vitória da Conquista (VDC)",
+      "destino": "São Paulo (GRU)",
+      "data": "30/01/2026",
+      "horario_saida": "10:40",
+      "horario_chegada": "12:35"
+    },
+    {
+      "origem": "São Paulo (GRU)",
+      "destino": "Buenos Aires (AEP)",
+      "data": "30/01/2026",
+      "horario_saida": "14:05",
+      "horario_chegada": "17:00"
+    },
+    {
+      "origem": "Buenos Aires (EZE)",
+      "destino": "São Paulo (GRU)",
+      "data": "06/02/2026",
+      "horario_saida": "02:30",
+      "horario_chegada": "05:15"
+    },
+    {
+      "origem": "São Paulo (GRU)",
+      "destino": "Vitória da Conquista (VDC)",
+      "data": "06/02/2026",
+      "horario_saida": "08:00",
+      "horario_chegada": "09:55"
+    }
+  ],
+  "hoteis": [
+    {
+      "cidade": "Buenos Aires",
+      "nome": "Waldorf Hotel",
+      "noites": 7,
+      "checkin": "30/01/2026",
+      "checkout": "06/02/2026",
+      "regime": "Só hospedagem"
+    }
+  ],
+  "passeios": [],
+  "pacote_base": {
+    "descricao": "Aéreo + Hotel",
+    "valor": 7910
+  },
+  "imagem_hero": "https://dicasargentina.com/wp-content/uploads/sites/32/2016/07/floralis-generica.jpg",
+  "imagens_cidades": {
+    "Buenos Aires": "https://www.viagensecaminhos.com/wp-content/uploads/2011/05/buenos-aires.jpg"
+  },
+  "roteiro": [
+    {
+      "dia": 1,
+      "data": "30/01",
+      "titulo": "Chegada a Buenos Aires",
+      "landmark": "Buenos Aires cityscape",
+      "horario": "Chegada às 17:00",
+      "descricao": "Ao desembarcar no Aeroporto, um parceiro da DSC Travel estará aguardando para levá-lo ao hotel com conforto e segurança.\n\nApós o check-in, aproveite para descansar e se aclimatar à cidade. Buenos Aires te espera com sua energia vibrante!\n\nPara o jantar, explore os restaurantes do bairro - a culinária local é imperdível.",
+      "transfer": "a-incluir",
+      "dica": "O bairro é perfeito para sua primeira caminhada. Seguro e charmoso!",
+      "imagem_dia": "https://www.viagensecaminhos.com/wp-content/uploads/2011/05/buenos-aires.jpg"
+    },
+    {
+      "dia": 2,
+      "data": "31/01",
+      "titulo": "City Tour",
+      "landmark": "Obelisco",
+      "horario": null,
+      "descricao": "Comece o dia explorando o coração da cidade. Visite o Obelisco, símbolo icônico de Buenos Aires, e caminhe pela Avenida 9 de Julio.\n\nÀ tarde, faça uma visita guiada ao majestoso Teatro Colón. À noite, aproveite para jantar em Puerto Madero.\n\nBuenos Aires é linda tanto de dia quanto à noite!",
+      "transfer": null,
+      "dica": "Reserve ingressos para o Teatro Colón com antecedência para garantir sua visita.",
+      "imagem_dia": "https://images.unsplash.com/photo-teste"
+    },
+    {
+      "dia": 3,
+      "data": "01/02",
+      "titulo": "Explorando Palermo",
+      "landmark": "Palermo",
+      "horario": null,
+      "descricao": "Passe a manhã caminhando pelo bairro de Palermo, conhecido por seus parques e jardins. Visite o Jardim Botânico e o Rosedal.\n\nÀ tarde, explore as boutiques e cafés charmosos de Palermo Soho. À noite, experimente a vibrante vida noturna de Palermo Hollywood.\n\nPalermo é perfeito para quem ama design, gastronomia e cultura.",
+      "transfer": null,
+      "dica": "Use o transporte público para se locomover - é eficiente e econômico.",
+      "imagem_dia": "https://dicasargentina.com/wp-content/uploads/sites/32/2016/07/floralis-generica.jpg"
+    },
+    {
+      "dia": 4,
+      "data": "02/02",
+      "titulo": "La Boca e Caminito",
+      "landmark": "La Boca",
+      "horario": null,
+      "descricao": "Descubra o colorido bairro de La Boca, famoso por suas casas vibrantes e o Caminito. Passeie pelas ruas e aprecie a arte de rua e os artistas locais.\n\nAlmoce em um dos restaurantes típicos e experimente uma autêntica parrillada argentina.\n\nÀ noite, assista a um show de tango em San Telmo para uma experiência cultural inesquecível.",
+      "transfer": null,
+      "dica": "Cuidado com os pertences em La Boca e evite áreas desertas.",
+      "imagem_dia": "https://www.maladeaventuras.com/wp-content/uploads/2023/10/o-que-fazer-buenos-aires-Caminito-4.jpg"
+    },
+    {
+      "dia": 5,
+      "data": "03/02",
+      "titulo": "Passeio em Recoleta",
+      "landmark": "Recoleta",
+      "horario": null,
+      "descricao": "Passe a manhã explorando o icônico Cemitério da Recoleta e admire a impressionante arquitetura dos mausoléus.\n\nVisite o Museu Nacional de Belas Artes e almoce em um dos elegantes cafés da região.\n\nÀ noite, aproveite para caminhar pelo bairro e descobrir seus bares e restaurantes sofisticados.",
+      "transfer": null,
+      "dica": "Visite o cemitério pela manhã para evitar multidões.",
+      "imagem_dia": "https://www.viagensecaminhos.com/wp-content/uploads/2011/05/cemiterio-da-recoleta-buenos-aires-1.jpg"
+    },
+    {
+      "dia": 6,
+      "data": "04/02",
+      "titulo": "Dia em Puerto Madero",
+      "landmark": "Puerto Madero",
+      "horario": null,
+      "descricao": "Comece o dia com um passeio ao longo das docas de Puerto Madero, o bairro mais moderno de Buenos Aires.\n\nAlmoce em um dos restaurantes à beira do rio e visite a Puente de la Mujer.\n\nÀ noite, desfrute de um jantar em um dos sofisticados restaurantes com vista para o Rio da Prata.",
+      "transfer": null,
+      "dica": "Puerto Madero é excelente para caminhadas noturnas - aproveite a segurança da área.",
+      "imagem_dia": "https://dicasargentina.com/wp-content/uploads/sites/32/2016/07/floralis-generica.jpg"
+    },
+    {
+      "dia": 7,
+      "data": "05/02",
+      "titulo": "San Telmo e Cultura",
+      "landmark": "San Telmo",
+      "horario": null,
+      "descricao": "Explore o charmoso bairro de San Telmo, conhecido por suas feiras de antiguidades e atmosfera boêmia.\n\nVisite a Plaza Dorrego e desfrute de apresentações de tango ao ar livre.\n\nConclua o dia com um jantar em um dos tradicionais restaurantes de San Telmo, provando pratos típicos argentinos.",
+      "transfer": null,
+      "dica": "Visite San Telmo no domingo para aproveitar a famosa feira de antiguidades.",
+      "imagem_dia": "https://cdn-ileapbh.nitrocdn.com/awswdmxduTjCKQiPPVuNWTjlobpOKWLT/assets/images/optimized/rev-b4160f9/aguiarbuenosaires.com/wp-content/uploads/2015/10/san-telmo4.jpg"
+    },
+    {
+      "dia": 8,
+      "data": "06/02",
+      "titulo": "Retorno",
+      "landmark": "Buenos Aires airport",
+      "horario": "Partida às 02:30",
+      "descricao": "Após o check-out no hotel, um transfer estará disponível para levá-lo ao aeroporto.\n\nDespeça-se de Buenos Aires com belas lembranças e experiências inesquecíveis.\n\nAproveite o duty-free do aeroporto para últimas compras antes do embarque.",
+      "transfer": "a-incluir",
+      "dica": "Faça o check-in online antecipadamente para evitar filas no aeroporto.",
+      "imagem_dia": "https://dicasargentina.com/wp-content/uploads/sites/32/2016/07/floralis-generica.jpg"
+    }
+  ]
+}

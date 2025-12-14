@@ -1,24 +1,44 @@
+"""
+Módulo para extração inteligente de dados de viagem usando OpenAI.
+
+Responsabilidades:
+- Extrair dados estruturados de PDFs de orçamento
+- Gerar roteiro inteligente via IA
+- Buscar e associar imagens curadas para cada destino
+- Fallback para dados simulados quando necessário
+
+Depende de: supabase_images, generate_itinerary
+"""
+
 import os
 import json
 from pathlib import Path
+from typing import Dict, List
 from openai import OpenAI
 import PyPDF2
 
-# Tentativa de importar funções de imagem
-try:
-    from image_search import get_images_for_all_cities, get_hero_image_for_trip
-except ImportError as e:
-    print(f"⚠️ Erro ao importar image_search em extract_with_ai: {e}")
+# Single source of truth para imagens
+from supabase_images import (
+    get_images_for_all_cities,
+    get_hero_image_for_trip,
+    buscar_imagem,
+)
 
-    def get_images_for_all_cities(destinations: list[str]) -> dict:
-        return {}
 
-    def get_hero_image_for_trip(destinations: list[str]) -> str | None:
-        return None
-
+# ============================================================================
+# EXTRAÇÃO DE PDF
+# ============================================================================
 
 def read_pdf_text(pdf_path: Path) -> str:
-    """Extrai texto de um arquivo PDF."""
+    """
+    Extrai texto de um arquivo PDF.
+
+    Args:
+        pdf_path: Caminho para o arquivo PDF
+
+    Returns:
+        Texto extraído do PDF
+    """
     try:
         with open(pdf_path, "rb") as file:
             pdf_reader = PyPDF2.PdfReader(file)
@@ -27,13 +47,25 @@ def read_pdf_text(pdf_path: Path) -> str:
                 text += page.extract_text() + "\n"
             return text
     except Exception as e:
-        print(f"Erro ao ler PDF {pdf_path}: {e}")
+        print(f"⚠️ Erro ao ler PDF {pdf_path}: {e}")
         return ""
 
 
-def extract_destinations_from_data(data: dict) -> list[str]:
-    """Extrai lista de destinos dos HOTÉIS apenas."""
-    destinations: list[str] = []
+# ============================================================================
+# EXTRAÇÃO DE DESTINOS
+# ============================================================================
+
+def extract_destinations_from_data(data: Dict) -> List[str]:
+    """
+    Extrai lista única de destinos dos hotéis.
+
+    Args:
+        data: Dados estruturados da viagem
+
+    Returns:
+        Lista de cidades únicas
+    """
+    destinations: List[str] = []
 
     if "hoteis" in data and isinstance(data["hoteis"], list):
         for hotel in data["hoteis"]:
@@ -49,39 +81,51 @@ def extract_destinations_from_data(data: dict) -> list[str]:
     return destinations
 
 
-def extract_travel_data(trip_folder: Path, cliente_nome: str = "") -> dict:
+# ============================================================================
+# EXTRAÇÃO PRINCIPAL
+# ============================================================================
+
+def extract_travel_data(trip_folder: Path, cliente_nome: str = "") -> Dict:
     """
     Extrai dados de viagem dos arquivos usando OpenAI.
+
+    Fluxo:
+    1. Lê todos os PDFs da pasta
+    2. Envia para OpenAI para extração estruturada
+    3. Identifica destinos
+    4. Busca imagens curadas no Supabase
+    5. Gera roteiro inteligente
+    6. Associa fotos específicas para cada dia
 
     Args:
         trip_folder: Pasta com os arquivos enviados
         cliente_nome: Nome do cliente (opcional)
 
     Returns:
-        Dados estruturados da viagem (com imagem do destino e roteiro)
+        Dados estruturados completos da viagem
     """
-
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
         raise ValueError("OPENAI_API_KEY não configurada no arquivo .env")
 
     client = OpenAI(api_key=api_key)
 
-    files_content: list[str] = []
+    # Coletar conteúdo de todos os PDFs
+    files_content: List[str] = []
     for file_path in trip_folder.glob("*"):
         if file_path.suffix.lower() == ".pdf":
             text = read_pdf_text(file_path)
             if text.strip():
-                files_content.append(
-                    f"=== Arquivo: {file_path.name} ===\n{text}"
-                )
+                files_content.append(f"=== Arquivo: {file_path.name} ===\n{text}")
 
+    # Fallback se não houver PDFs
     if not files_content:
         print("⚠️ Nenhum PDF encontrado, usando dados simulados")
         return get_mock_data(cliente_nome)
 
     all_text = "\n\n".join(files_content)
 
+    # Prompt para extração estruturada
     prompt = f"""Analise o seguinte conteúdo de orçamento de viagem e extraia as informações em formato JSON.
 
 CONTEÚDO DOS ARQUIVOS:
@@ -135,6 +179,7 @@ FORMATO JSON (retorne APENAS JSON, sem texto adicional):
 }}"""
 
     try:
+        # Chamar OpenAI
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=[
@@ -158,18 +203,22 @@ FORMATO JSON (retorne APENAS JSON, sem texto adicional):
         result_text = response.choices[0].message.content
         extracted_data = json.loads(result_text)
 
+        # Garantir nome do cliente
         if cliente_nome:
             extracted_data["cliente"] = cliente_nome
 
         print(f"✅ Extração bem-sucedida de {len(files_content)} arquivo(s)")
 
+        # Processar imagens
         destinations = extract_destinations_from_data(extracted_data)
         if destinations:
             print(f"🖼️ Buscando imagens para destinos: {destinations}")
 
+            # Imagem hero
             hero_image = get_hero_image_for_trip(destinations)
             extracted_data["imagem_hero"] = hero_image
 
+            # Imagens de todas as cidades
             all_images = get_images_for_all_cities(destinations)
             extracted_data["imagens_cidades"] = all_images
 
@@ -177,6 +226,7 @@ FORMATO JSON (retorne APENAS JSON, sem texto adicional):
         else:
             print("⚠️ Nenhum destino identificado, imagem não adicionada")
 
+        # Gerar roteiro
         from generate_itinerary import generate_itinerary
 
         print("📅 Gerando roteiro...")
@@ -184,31 +234,26 @@ FORMATO JSON (retorne APENAS JSON, sem texto adicional):
         extracted_data["roteiro"] = roteiro
         print(f"✅ Roteiro gerado: {len(roteiro)} dias")
 
+        # Buscar fotos específicas para cada dia do roteiro
         if roteiro:
-            print(
-                "📸 Buscando fotos específicas para cada dia do roteiro..."
-            )
-            from supabase_images import buscar_imagem
+            print("📸 Buscando fotos específicas para cada dia do roteiro...")
 
             for dia in roteiro:
                 landmark = dia.get("landmark")
-                cidade = (
-                    extracted_data.get("hoteis", [{}])[0]
-                    .get("cidade", "")
-                )
+                # Pegar cidade do primeiro hotel (simplificação)
+                cidade = extracted_data.get("hoteis", [{}])[0].get("cidade", "")
 
                 if landmark and cidade:
                     print(f"  Dia {dia.get('dia')}: {landmark}")
 
+                    # Buscar foto curada com matching semântico
                     foto = buscar_imagem(cidade, landmark)
 
                     if foto:
                         dia["imagem_dia"] = foto
                         print("    💎 Foto curada encontrada")
                     else:
-                        print(
-                            "    ⚠️ Sem foto curada, usando fallback"
-                        )
+                        print("    ⚠️ Sem foto curada, usando fallback")
                         dia["imagem_dia"] = (
                             "https://images.unsplash.com/"
                             "photo-1488646953014-85cb44e25828?w=1200"
@@ -224,13 +269,22 @@ FORMATO JSON (retorne APENAS JSON, sem texto adicional):
         return get_mock_data(cliente_nome)
 
 
-def get_mock_data(cliente_nome: str = "") -> dict:
-    """Retorna dados simulados caso a extração falhe."""
+# ============================================================================
+# DADOS SIMULADOS (FALLBACK)
+# ============================================================================
 
+def get_mock_data(cliente_nome: str = "") -> Dict:
+    """
+    Retorna dados simulados caso a extração falhe.
+
+    Args:
+        cliente_nome: Nome do cliente
+
+    Returns:
+        Dados simulados completos
+    """
     mock_data = {
-        "cliente": (
-            cliente_nome if cliente_nome else "Cliente (dados simulados)"
-        ),
+        "cliente": cliente_nome if cliente_nome else "Cliente (dados simulados)",
         "periodo": {"inicio": "15/02", "fim": "22/02"},
         "voos": [
             {
@@ -264,6 +318,7 @@ def get_mock_data(cliente_nome: str = "") -> dict:
         },
     }
 
+    # Adicionar imagem hero para dados simulados
     destinations = extract_destinations_from_data(mock_data)
     if destinations:
         mock_data["imagem_hero"] = get_hero_image_for_trip(destinations)
