@@ -9,6 +9,9 @@ from openai import OpenAI
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
+# Importar configurações
+from config import ITINERARY_CONFIG, LANDMARK_DB
+
 load_dotenv()
 
 # ============================================================================
@@ -50,12 +53,15 @@ def generate_itinerary(trip_data: dict) -> list[dict]:
     fim = periodo.get("fim", "")
     
     # Identificar cidade principal
-    cidade_principal = "Buenos Aires"
+    cidade_principal = ITINERARY_CONFIG.DEFAULT_CITY
     if hoteis and len(hoteis) > 0:
-        cidade_principal = hoteis[0].get("cidade", "Buenos Aires")
+        cidade_principal = hoteis[0].get("cidade", ITINERARY_CONFIG.DEFAULT_CITY)
     
     # Identificar se tem transfer nos passeios
     tem_transfer = any("transfer" in str(p.get("nome", "")).lower() for p in passeios)
+    
+    # Buscar landmarks da cidade
+    landmarks_texto = LANDMARK_DB.get_landmarks_text(cidade_principal)
     
     # Montar contexto para a IA
     prompt = f"""Crie um roteiro dia-a-dia COMPLETO para esta viagem a {cidade_principal}:
@@ -92,7 +98,7 @@ REGRAS OBRIGATÓRIAS:
    - Título: Nome de atividade/bairro (ex: "City Tour", "Explorando Palermo", "La Boca e Caminito")
    - landmark: Nome DO LOCAL específico visitado (ex: "Obelisco", "Palermo", "La Boca", "Recoleta", "Puerto Madero")
    - Descrição: 2-3 parágrafos com sugestões de manhã, tarde e noite
-   - VARIE os bairros/locais a cada dia: Obelisco, Teatro Colón, Palermo, La Boca, Recoleta, Puerto Madero
+   - VARIE os bairros/locais a cada dia
    - Se tem passeio incluído: mencionar "✓ [Nome do passeio] incluído"
    - Dica: Dica sobre restaurantes, horários, transporte
 
@@ -105,14 +111,7 @@ REGRAS OBRIGATÓRIAS:
    - Dica: Dica sobre check-in antecipado
 
 LANDMARKS VÁLIDOS PARA {cidade_principal}:
-- "Obelisco" (monumento icônico na Av. 9 de Julio)
-- "Palermo" (bairro com parques e jardins)
-- "La Boca" (bairro colorido com Caminito)
-- "Puerto Madero" (bairro moderno à beira-mar)
-- "Recoleta" (cemitério e arquitetura)
-- "San Telmo" (feira de antiguidades)
-- "Teatro Colón" (ópera house)
-- "Casa Rosada" (Plaza de Mayo)
+{landmarks_texto}
 
 FORMATO JSON (retorne APENAS JSON array limpo, sem ```json):
 [
@@ -122,39 +121,19 @@ FORMATO JSON (retorne APENAS JSON array limpo, sem ```json):
     "titulo": "Chegada a {cidade_principal}",
     "landmark": "{cidade_principal} cityscape",
     "horario": "Chegada às 17:00",
-    "descricao": "Ao desembarcar no Aeroporto, um parceiro da DSC Travel estará aguardando para levá-lo ao hotel com conforto e segurança.\\n\\nApós o check-in, aproveite para descansar e se aclimatar à cidade. {cidade_principal} te espera com sua energia vibrante!\\n\\nPara o jantar, explore os restaurantes do bairro - a culinária local é imperdível.",
+    "descricao": "...",
     "transfer": "{('incluido' if tem_transfer else 'a-incluir')}",
-    "dica": "O bairro é perfeito para sua primeira caminhada. Seguro e charmoso!"
-  }},
-  {{
-    "dia": 2,
-    "data": "31/01",
-    "titulo": "City Tour",
-    "landmark": "Obelisco",
-    "horario": null,
-    "descricao": "Comece o dia explorando o coração da cidade. Visite o Obelisco, símbolo icônico de Buenos Aires, e caminhe pela Avenida 9 de Julio.\\n\\nÀ tarde, faça uma visita guiada ao majestoso Teatro Colón. À noite, aproveite para jantar em Puerto Madero.\\n\\nBuenos Aires é linda tanto de dia quanto à noite!",
-    "transfer": null,
-    "dica": "Reserve ingressos para o Teatro Colón com antecedência para garantir sua visita."
-  }},
-  {{
-    "dia": 3,
-    "data": "01/02",
-    "titulo": "Explorando Palermo",
-    "landmark": "Palermo",
-    "horario": null,
-    "descricao": "Passe a manhã caminhando pelo bairro de Palermo, conhecido por seus parques e jardins. Visite o Jardim Botânico e o Rosedal.\\n\\nÀ tarde, explore as boutiques e cafés charmosos de Palermo Soho. À noite, experimente a vibrante vida noturna de Palermo Hollywood.\\n\\nPalermo é perfeito para quem ama design, gastronomia e cultura.",
-    "transfer": null,
-    "dica": "Use o transporte público para se locomover - é eficiente e econômico."
+    "dica": "..."
   }}
 ]
 
 IMPORTANTE: CADA DIA DEVE TER UM LANDMARK DIFERENTE para garantir variedade visual nas fotos!"""
 
     try:
-        logger.info("🤖 Chamando OpenAI para gerar roteiro...")
+        logger.info(f"🤖 Gerando roteiro para {cidade_principal}...")
         
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model=ITINERARY_CONFIG.AI_MODEL,
             messages=[
                 {
                     "role": "system",
@@ -165,8 +144,9 @@ IMPORTANTE: CADA DIA DEVE TER UM LANDMARK DIFERENTE para garantir variedade visu
                     "content": prompt
                 }
             ],
-            temperature=0.7,
-            max_tokens=3000
+            temperature=ITINERARY_CONFIG.AI_TEMPERATURE,
+            max_tokens=ITINERARY_CONFIG.AI_MAX_TOKENS,
+            timeout=ITINERARY_CONFIG.API_TIMEOUT
         )
         
         result_text = response.choices[0].message.content.strip()
@@ -184,6 +164,14 @@ IMPORTANTE: CADA DIA DEVE TER UM LANDMARK DIFERENTE para garantir variedade visu
         if not isinstance(dias, list):
             logger.error(f"❌ Resposta não é lista, é {type(dias)}")
             return []
+        
+        # Validar número de dias
+        if len(dias) < ITINERARY_CONFIG.MIN_DAYS:
+            logger.error(f"❌ Roteiro muito curto: {len(dias)} dias")
+            return []
+        
+        if len(dias) > ITINERARY_CONFIG.MAX_DAYS:
+            logger.warning(f"⚠️ Roteiro longo: {len(dias)} dias (máx recomendado: {ITINERARY_CONFIG.MAX_DAYS})")
         
         logger.info(f"✅ Roteiro gerado com {len(dias)} dias")
         
@@ -226,7 +214,7 @@ if __name__ == "__main__":
     roteiro = generate_itinerary(test_data)
     
     if roteiro:
-        logger.info(f"\n📋 ROTEIRO GERADO ({len(roteiro)} dias):")
-        logger.info(json.dumps(roteiro, indent=2, ensure_ascii=False))
+        logger.info(f"\n✅ Roteiro gerado com {len(roteiro)} dias")
+        logger.info(f"Landmarks: {[d.get('landmark') for d in roteiro]}")
     else:
         logger.error("❌ Falha ao gerar roteiro")

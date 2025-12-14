@@ -60,6 +60,65 @@ class ItineraryConfig:
     # Validação
     MIN_DAYS: int = 1
     MAX_DAYS: int = 30
+    
+    # Cidade padrão se não conseguir detectar
+    DEFAULT_CITY: str = "Buenos Aires"
+
+
+# ============================================================================
+# LANDMARKS POR CIDADE
+# ============================================================================
+
+@dataclass(frozen=True)
+class LandmarkDatabase:
+    """Database de landmarks válidos por cidade"""
+    
+    LANDMARKS: dict = None
+    
+    def __post_init__(self):
+        # Usar object.__setattr__ porque a classe é frozen
+        object.__setattr__(self, 'LANDMARKS', {
+            "Buenos Aires": [
+                "Obelisco",
+                "Palermo",
+                "La Boca",
+                "Puerto Madero",
+                "Recoleta",
+                "San Telmo",
+                "Teatro Colón",
+                "Casa Rosada"
+            ],
+            "Lima": [
+                "Plaza de Armas",
+                "Miraflores",
+                "Barranco",
+                "Huaca Pucllana",
+                "Circuito Mágico del Agua"
+            ],
+            "Cusco": [
+                "Plaza de Armas",
+                "Sacsayhuamán",
+                "San Blas",
+                "Qorikancha",
+                "Mercado San Pedro"
+            ],
+            "Santiago": [
+                "Cerro San Cristóbal",
+                "Plaza de Armas",
+                "Bellavista",
+                "Providencia",
+                "Mercado Central"
+            ]
+        })
+    
+    def get_landmarks(self, city: str) -> list[str]:
+        """Retorna landmarks válidos para uma cidade"""
+        return self.LANDMARKS.get(city, [f"{city} cityscape"])
+    
+    def get_landmarks_text(self, city: str) -> str:
+        """Retorna texto formatado dos landmarks"""
+        landmarks = self.get_landmarks(city)
+        return "\n".join([f'- "{l}"' for l in landmarks])
 
 
 # ============================================================================
@@ -68,3 +127,4 @@ class ItineraryConfig:
 
 IMAGE_CONFIG: Final = ImageSearchConfig()
 ITINERARY_CONFIG: Final = ItineraryConfig()
+LANDMARK_DB: Final = LandmarkDatabase()
