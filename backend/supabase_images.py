@@ -19,6 +19,9 @@ from typing import Optional, List, Dict, Any
 from supabase import create_client, Client
 from openai import OpenAI
 
+# Importar configurações
+from config import IMAGE_CONFIG
+
 # ============================================================================
 # CONFIGURAÇÃO DE LOGGING
 # ============================================================================
@@ -30,12 +33,10 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ============================================================================
-# CONSTANTES
+# CONSTANTES (agora vem do config)
 # ============================================================================
 
-FALLBACK_URL = (
-    "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1200"
-)
+FALLBACK_URL = IMAGE_CONFIG.FALLBACK_URL
 
 # ============================================================================
 # INICIALIZAÇÃO
@@ -66,21 +67,29 @@ else:
 # ============================================================================
 
 def _normalize(text: str) -> str:
+    """Normaliza texto removendo stopwords e caracteres especiais"""
     if not isinstance(text, str):
         return ""
+    
     text = text.lower()
-    # remove palavras muito genéricas que atrapalham a comparação
-    for lixo in ["cityscape", "foto da cidade de", "foto da cidade", "vista da cidade"]:
-        text = text.replace(lixo, "")
-    # mantém apenas letras, números e espaços
+    
+    # Remove stopwords configuráveis
+    for stopword in IMAGE_CONFIG.STOPWORDS:
+        text = text.replace(stopword, "")
+    
+    # Mantém apenas letras, números e espaços
     cleaned = []
     for ch in text:
         if ch.isalnum() or ch.isspace():
             cleaned.append(ch)
+    
     return "".join(cleaned).strip()
 
 
-def _buscar_qualquer_imagem_da_cidade(city: str, alvo_landmark: str | None = None) -> Optional[str]:
+def _buscar_qualquer_imagem_da_cidade(
+    city: str, 
+    alvo_landmark: str | None = None
+) -> Optional[str]:
     """
     Fallback inteligente: se não achar o landmark exato/semântico,
     pega QUALQUER imagem da cidade, priorizando a que mais parece
@@ -98,7 +107,7 @@ def _buscar_qualquer_imagem_da_cidade(city: str, alvo_landmark: str | None = Non
             .eq("city", city)
             .order("quality", desc=True)
             .order("created_at", desc=True)
-            .limit(20)
+            .limit(IMAGE_CONFIG.CITY_IMAGES_LIMIT)
             .execute()
         )
 
@@ -120,22 +129,20 @@ def _buscar_qualquer_imagem_da_cidade(city: str, alvo_landmark: str | None = Non
 
             score = 0.0
 
-            # se contiver o nome da cidade, já é bem relevante
+            # Aplicar pesos configuráveis
             if city_norm and city_norm in texto_norm:
-                score += 2.0
+                score += IMAGE_CONFIG.CITY_NAME_BOOST
 
-            # se parecer uma foto "da cidade" (genérica panorâmica)
             if any(palavra in texto_norm for palavra in ["buenos aires", "cidade", "panoramica", "panorâmica"]):
-                score += 1.0
+                score += IMAGE_CONFIG.GENERIC_CITY_BOOST
 
-            # se o alvo do dia tiver alguma relação textual
             if alvo_norm and alvo_norm in texto_norm:
-                score += 2.0
+                score += IMAGE_CONFIG.LANDMARK_MATCH_BOOST
 
-            # qualidade como pequeno peso extra
+            # Qualidade como peso extra
             try:
                 q = float(row.get("quality") or 0)
-                score += q / 10.0
+                score += q * IMAGE_CONFIG.QUALITY_WEIGHT
             except Exception:
                 pass
 
@@ -231,7 +238,7 @@ REGRAS ESPECIAIS:
 Retorne APENAS o nome exato do landmark da lista, ou "NENHUM"."""
 
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model=IMAGE_CONFIG.AI_MODEL,
             messages=[
                 {
                     "role": "system",
@@ -242,8 +249,8 @@ Retorne APENAS o nome exato do landmark da lista, ou "NENHUM"."""
                 },
                 {"role": "user", "content": prompt},
             ],
-            temperature=0.1,
-            max_tokens=50,
+            temperature=IMAGE_CONFIG.AI_TEMPERATURE,
+            max_tokens=IMAGE_CONFIG.AI_MAX_TOKENS,
         )
 
         resultado = (response.choices[0].message.content or "").strip()
