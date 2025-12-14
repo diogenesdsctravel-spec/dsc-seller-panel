@@ -33,7 +33,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ============================================================================
-# CONSTANTES (agora vem do config)
+# CONSTANTES
 # ============================================================================
 
 FALLBACK_URL = IMAGE_CONFIG.FALLBACK_URL
@@ -60,6 +60,40 @@ if SUPABASE_URL and SUPABASE_KEY:
         supabase = None
 else:
     logger.warning("⚠️ Variáveis SUPABASE_URL ou SUPABASE_KEY não configuradas")
+
+
+# ============================================================================
+# VALIDAÇÃO
+# ============================================================================
+
+def _validate_string_input(value: Any, param_name: str) -> str:
+    """
+    Valida e normaliza input de string.
+    
+    Args:
+        value: Valor a validar
+        param_name: Nome do parâmetro (para mensagens de erro)
+    
+    Returns:
+        String limpa e validada
+    
+    Raises:
+        ValueError: Se valor for None ou vazio
+        TypeError: Se valor não for string
+    """
+    if value is None:
+        raise ValueError(f"{param_name} não pode ser None")
+    
+    if not isinstance(value, str):
+        raise TypeError(
+            f"{param_name} deve ser string, recebeu {type(value).__name__}"
+        )
+    
+    cleaned = value.strip()
+    if not cleaned:
+        raise ValueError(f"{param_name} não pode ser vazio")
+    
+    return cleaned
 
 
 # ============================================================================
@@ -179,7 +213,22 @@ def encontrar_landmark_semantico(city: str, landmark_buscado: str) -> Optional[s
         "Buenos Aires cityscape" → "Buenos Aires"
 
     Se não achar correspondência forte, retorna None.
+    
+    Args:
+        city: Nome da cidade
+        landmark_buscado: Landmark a buscar
+    
+    Returns:
+        Nome do landmark encontrado ou None
     """
+    # Validação
+    try:
+        city = _validate_string_input(city, "city")
+        landmark_buscado = _validate_string_input(landmark_buscado, "landmark_buscado")
+    except (ValueError, TypeError) as e:
+        logger.error(f"Input inválido em encontrar_landmark_semantico: {e}")
+        return None
+    
     if not supabase:
         return None
 
@@ -274,11 +323,25 @@ def buscar_imagem(city: str, landmark: str) -> Optional[str]:
     1. Tenta match exato (city + landmark)
     2. Se falhar, usa IA para matching semântico dentro dos landmarks da cidade
     3. Se ainda assim falhar, pega QUALQUER imagem da cidade com melhor score
-       (nunca cai em fallback externo se houver alguma foto da cidade)
     4. Só retorna None se não houver NENHUMA foto daquela cidade no banco
-       ou se o Supabase estiver indisponível.
+    
+    Args:
+        city: Nome da cidade
+        landmark: Nome do landmark
+    
+    Returns:
+        URL da imagem ou None
     """
+    # Validação
+    try:
+        city = _validate_string_input(city, "city")
+        landmark = _validate_string_input(landmark, "landmark")
+    except (ValueError, TypeError) as e:
+        logger.error(f"Input inválido em buscar_imagem: {e}")
+        return None
+    
     if not supabase:
+        logger.error("Supabase não disponível")
         return None
 
     try:
@@ -300,7 +363,7 @@ def buscar_imagem(city: str, landmark: str) -> Optional[str]:
                 logger.debug(f"   Desc: {desc[:60]}")
             return img.get("image_url")
 
-        # 2) Matching semântico (landmark → outro já cadastrado)
+        # 2) Matching semântico
         landmark_correto = encontrar_landmark_semantico(city, landmark)
 
         if landmark_correto:
@@ -324,12 +387,11 @@ def buscar_imagem(city: str, landmark: str) -> Optional[str]:
                     logger.debug(f"   Desc: {desc[:60]}")
                 return img.get("image_url")
 
-        # 3) Fallback inteligente: qualquer imagem da cidade
+        # 3) Fallback inteligente
         url = _buscar_qualquer_imagem_da_cidade(city, alvo_landmark=landmark)
         if url:
             return url
 
-        # Nenhuma foto da cidade – deixa quem chamou decidir o fallback externo
         return None
 
     except Exception as e:
@@ -351,8 +413,28 @@ def salvar_imagem(
     """
     Salva imagem no Supabase.
     Se já existir foto do mesmo landmark, cria variação com sufixo numérico.
+    
+    Args:
+        city: Nome da cidade
+        landmark: Nome do landmark
+        image_url: URL da imagem
+        source: Fonte da imagem (manual, auto, etc)
+        description: Descrição opcional
+    
+    Returns:
+        True se salvou com sucesso, False caso contrário
     """
+    # Validação
+    try:
+        city = _validate_string_input(city, "city")
+        landmark = _validate_string_input(landmark, "landmark")
+        image_url = _validate_string_input(image_url, "image_url")
+    except (ValueError, TypeError) as e:
+        logger.error(f"Input inválido em salvar_imagem: {e}")
+        return False
+    
     if not supabase:
+        logger.error("Supabase não disponível")
         return False
 
     try:
@@ -415,44 +497,41 @@ def salvar_imagem(
 def get_hero_image_for_trip(destinations: List[str]) -> Optional[str]:
     """
     Busca a imagem hero para o destino principal da viagem.
-
-    Regra:
-    - Se existir QUALQUER imagem daquela cidade no banco, usa ela
-      (priorizando fotos que parecem representar a cidade).
-    - Só usa FALLBACK_URL se:
-        a) não houver nenhuma imagem para a cidade, ou
-        b) o Supabase estiver indisponível.
+    
+    Args:
+        destinations: Lista de destinos da viagem
+    
+    Returns:
+        URL da imagem hero ou FALLBACK_URL
     """
     if not destinations:
         return FALLBACK_URL
 
     city = destinations[0]
 
-    # Se Supabase estiver fora, não temos o que fazer
     if not supabase:
         return FALLBACK_URL
 
-    # Tentar pegar uma imagem que represente bem a cidade
     url = _buscar_qualquer_imagem_da_cidade(city, alvo_landmark=f"{city} cityscape")
     if url:
         return url
 
-    # Se não houver nada da cidade, ainda tentamos via buscar_imagem (que também usa banco)
     url = buscar_imagem(city, f"{city} cityscape")
     if url:
         return url
 
-    # Último caso: realmente não há nada no banco
     return FALLBACK_URL
 
 
 def get_images_for_all_cities(destinations: List[str]) -> Dict[str, str]:
     """
     Busca imagens para todas as cidades da viagem.
-
-    Para cada cidade:
-    - tenta pegar alguma imagem curada (nunca genérica se a cidade tiver foto)
-    - só coloca fallback se a cidade não tiver NENHUMA foto no banco
+    
+    Args:
+        destinations: Lista de destinos
+    
+    Returns:
+        Dicionário {cidade: url_imagem}
     """
     images: Dict[str, str] = {}
 
@@ -462,7 +541,6 @@ def get_images_for_all_cities(destinations: List[str]) -> Dict[str, str]:
 
         url = buscar_imagem(city, f"{city} cityscape")
         if not url:
-            # Não há nada no banco para essa cidade
             url = FALLBACK_URL
 
         images[city] = url
@@ -475,9 +553,7 @@ def get_images_for_all_cities(destinations: List[str]) -> Dict[str, str]:
 # ============================================================================
 
 def listar_todas_imagens() -> List[Dict]:
-    """
-    Lista todas as imagens cadastradas.
-    """
+    """Lista todas as imagens cadastradas"""
     if not supabase:
         return []
 
@@ -505,19 +581,18 @@ if __name__ == "__main__":
 
     logger.info("\n1️⃣ Teste de busca com matching semântico:")
     url = buscar_imagem("Buenos Aires", "Ponte da Mulher")
-    logger.info(f"Resultado Ponte da Mulher → {url}\n")
+    logger.info(f"Resultado → {url}\n")
 
-    logger.info("2️⃣ Teste de cityscape → cidade:")
+    logger.info("2️⃣ Teste de cityscape:")
     url2 = buscar_imagem("Buenos Aires", "Buenos Aires cityscape")
-    logger.info(f"Resultado BA cityscape → {url2}\n")
+    logger.info(f"Resultado → {url2}\n")
 
-    logger.info("3️⃣ Teste de imagem hero:")
+    logger.info("3️⃣ Teste de validação (deve falhar):")
+    url3 = buscar_imagem("", "")
+    logger.info(f"Resultado com string vazia → {url3}\n")
+
+    logger.info("4️⃣ Teste hero image:")
     hero = get_hero_image_for_trip(["Buenos Aires", "Lima"])
-    logger.info(f"Hero image: {hero}\n")
+    logger.info(f"Hero → {hero}\n")
 
-    logger.info("4️⃣ Teste de múltiplas cidades:")
-    images = get_images_for_all_cities(["Buenos Aires", "Lima", "Cusco"])
-    for c, u in images.items():
-        logger.info(f"  {c}: {u[:60]}...")
-
-    logger.info("\n" + "=" * 70)
+    logger.info("=" * 70)
