@@ -1,11 +1,12 @@
 from dotenv import load_dotenv
 load_dotenv()
 
-# Tentativa de importar as funções de imagem
+# Importar funções de imagem do módulo refatorado
 try:
-    from image_search import get_hero_image_for_trip, get_images_for_all_cities
+    from supabase_images import get_hero_image_for_trip, get_images_for_all_cities
+    print("✅ Módulo supabase_images carregado com sucesso")
 except ImportError as e:
-    print(f"⚠️ Erro ao importar image_search: {e}. Recursos de imagem serão desabilitados.")
+    print(f"⚠️ Erro ao importar supabase_images: {e}. Recursos de imagem serão desabilitados.")
 
     def get_hero_image_for_trip(destinations):
         return None
