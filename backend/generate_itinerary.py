@@ -12,6 +12,7 @@ import os
 import json
 import logging
 from typing import Optional, List, Dict, Any
+from pathlib import Path
 from openai import OpenAI
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
@@ -41,15 +42,7 @@ class TripDataExtractor:
     
     @staticmethod
     def extract_main_city(trip_data: dict) -> str:
-        """
-        Extrai cidade principal da viagem.
-        
-        Tenta em ordem:
-        1. Primeiro hotel
-        2. Destino do primeiro voo
-        3. Fallback para cidade padrão
-        """
-        # Tentar hotéis
+        """Extrai cidade principal da viagem"""
         hoteis = trip_data.get("hoteis", [])
         if hoteis and len(hoteis) > 0:
             cidade = hoteis[0].get("cidade", "")
@@ -57,12 +50,10 @@ class TripDataExtractor:
                 logger.debug(f"Cidade extraída de hotéis: {cidade}")
                 return cidade
         
-        # Tentar voos
         voos = trip_data.get("voos", [])
         if voos and len(voos) > 0:
             destino = voos[0].get("destino", "")
             if destino and "(" in destino:
-                # Extrair cidade de "Buenos Aires (AEP)"
                 cidade = destino.split("(")[0].strip()
                 logger.debug(f"Cidade extraída de voos: {cidade}")
                 return cidade
@@ -98,8 +89,43 @@ class TripDataExtractor:
 class PromptBuilder:
     """Constrói prompts para a IA"""
     
+    PROMPTS_DIR = Path(__file__).parent / "prompts"
+    
+    @classmethod
+    def _load_prompt_template(cls, filename: str) -> str:
+        """Carrega template de prompt de arquivo"""
+        path = cls.PROMPTS_DIR / filename
+        
+        if not path.exists():
+            logger.warning(f"Prompt file não encontrado: {path}, usando fallback")
+            return cls._get_fallback_prompt()
+        
+        try:
+            return path.read_text(encoding="utf-8")
+        except Exception as e:
+            logger.error(f"Erro ao ler prompt: {e}")
+            return cls._get_fallback_prompt()
+    
     @staticmethod
+    def _get_fallback_prompt() -> str:
+        """Prompt fallback se arquivo não existir"""
+        return """Crie um roteiro dia-a-dia para esta viagem a {cidade}.
+        
+PERÍODO: {inicio} a {fim}
+
+Retorne JSON array com dias do roteiro. Cada dia deve ter:
+- dia (número)
+- data
+- titulo
+- landmark (OBRIGATÓRIO)
+- descricao
+- dica
+
+IMPORTANTE: Campo 'landmark' é obrigatório em cada dia!"""
+    
+    @classmethod
     def build_itinerary_prompt(
+        cls,
         cidade: str,
         inicio: str,
         fim: str,
@@ -108,97 +134,36 @@ class PromptBuilder:
         passeios: List[dict],
         tem_transfer: bool
     ) -> str:
-        """
-        Constrói o prompt principal para geração de roteiro.
+        """Constrói o prompt principal para geração de roteiro"""
         
-        Args:
-            cidade: Cidade principal
-            inicio: Data de início
-            fim: Data de fim
-            voos: Lista de voos
-            hoteis: Lista de hotéis
-            passeios: Lista de passeios
-            tem_transfer: Se tem transfer incluído
+        # Carregar template
+        template = cls._load_prompt_template("itinerary_generation.txt")
         
-        Returns:
-            Prompt formatado
-        """
+        # Preparar dados
         landmarks_texto = LANDMARK_DB.get_landmarks_text(cidade)
         transfer_status = "incluido" if tem_transfer else "a-incluir"
         
-        return f"""Crie um roteiro dia-a-dia COMPLETO para esta viagem a {cidade}:
-
-PERÍODO: {inicio} a {fim}
-
-VOOS:
-{json.dumps(voos, indent=2, ensure_ascii=False)}
-
-HOTÉIS:
-{json.dumps(hoteis, indent=2, ensure_ascii=False)}
-
-PASSEIOS INCLUÍDOS:
-{json.dumps(passeios, indent=2, ensure_ascii=False)}
-
-REGRAS OBRIGATÓRIAS:
-
-1. CAMPO "landmark" É OBRIGATÓRIO EM CADA DIA:
-   - O campo "landmark" define qual FOTO será exibida naquele dia
-   - Use APENAS o nome do lugar, sem cidade ou país
-   - Dia 1 (chegada): use "{cidade} cityscape"
-   - Último dia (partida): use "{cidade} airport"
-
-2. DIA DE CHEGADA (Dia 1):
-   - Título: "Chegada a {cidade}"
-   - landmark: "{cidade} cityscape"
-   - Horário: Mostrar horário de chegada do voo
-   - Descrição: 2-3 parágrafos sobre chegada, transfer, check-in e primeira noite
-   - Transfer: "{transfer_status}"
-   - Dica: Uma dica prática sobre o bairro do hotel
-
-3. DIAS INTERMEDIÁRIOS (Dia 2 até penúltimo):
-   - Título: Nome de atividade/bairro
-   - landmark: Nome DO LOCAL específico visitado
-   - Descrição: 2-3 parágrafos com sugestões de manhã, tarde e noite
-   - VARIE os bairros/locais a cada dia
-   - Se tem passeio incluído: mencionar "✓ [Nome do passeio] incluído"
-   - Dica: Dica sobre restaurantes, horários, transporte
-
-4. DIA DE PARTIDA (Último dia):
-   - Título: "Retorno"
-   - landmark: "{cidade} airport"
-   - Horário: Mostrar horário do voo de volta
-   - Descrição: Check-out, transfer ao aeroporto, despedida
-   - Transfer: "{transfer_status}"
-   - Dica: Dica sobre check-in antecipado
-
-LANDMARKS VÁLIDOS PARA {cidade}:
-{landmarks_texto}
-
-FORMATO JSON (retorne APENAS JSON array limpo, sem ```json):
-[
-  {{
-    "dia": 1,
-    "data": "{inicio}",
-    "titulo": "Chegada a {cidade}",
-    "landmark": "{cidade} cityscape",
-    "horario": "Chegada às XX:XX",
-    "descricao": "...",
-    "transfer": "{transfer_status}",
-    "dica": "..."
-  }}
-]
-
-IMPORTANTE: CADA DIA DEVE TER UM LANDMARK DIFERENTE para garantir variedade visual nas fotos!"""
-    
-    @staticmethod
-    def get_system_prompt() -> str:
-        """Retorna o prompt do sistema"""
-        return (
-            "Você é um especialista em roteiros de viagem. "
-            "Crie roteiros detalhados, práticos e inspiradores. "
-            "SEMPRE inclua o campo 'landmark' em cada dia. "
-            "Retorne APENAS JSON array limpo, sem markdown."
+        voos_json = json.dumps(voos, indent=2, ensure_ascii=False)
+        hoteis_json = json.dumps(hoteis, indent=2, ensure_ascii=False)
+        passeios_json = json.dumps(passeios, indent=2, ensure_ascii=False)
+        
+        # Renderizar template
+        return template.format(
+            cidade=cidade,
+            inicio=inicio,
+            fim=fim,
+            voos_json=voos_json,
+            hoteis_json=hoteis_json,
+            passeios_json=passeios_json,
+            transfer_status=transfer_status,
+            landmarks_texto=landmarks_texto
         )
+    
+    @classmethod
+    def get_system_prompt(cls) -> str:
+        """Retorna o prompt do sistema"""
+        template = cls._load_prompt_template("system_itinerary.txt")
+        return template.strip()
 
 
 # ============================================================================
@@ -210,39 +175,18 @@ class ResponseProcessor:
     
     @staticmethod
     def clean_markdown(text: str) -> str:
-        """
-        Remove markdown wrapper se presente.
-        
-        Args:
-            text: Texto da resposta
-        
-        Returns:
-            Texto limpo
-        """
+        """Remove markdown wrapper se presente"""
         text = text.strip()
         
         if text.startswith("```"):
             lines = text.split("\n")
-            # Remove primeira e última linha (```json e ```)
             text = "\n".join(lines[1:-1])
         
         return text.strip()
     
     @staticmethod
     def parse_json(text: str) -> List[dict]:
-        """
-        Parse JSON com tratamento de erro.
-        
-        Args:
-            text: String JSON
-        
-        Returns:
-            Lista de dicionários
-        
-        Raises:
-            json.JSONDecodeError: Se JSON inválido
-            ValueError: Se não for lista
-        """
+        """Parse JSON com tratamento de erro"""
         try:
             data = json.loads(text)
             
@@ -260,17 +204,8 @@ class ResponseProcessor:
         dias: List[dict],
         cidade: str
     ) -> List[dict]:
-        """
-        Valida estrutura do roteiro e adiciona landmarks ausentes.
+        """Valida estrutura do roteiro e adiciona landmarks ausentes"""
         
-        Args:
-            dias: Lista de dias do roteiro
-            cidade: Cidade principal
-        
-        Returns:
-            Lista validada
-        """
-        # Validar número de dias
         if len(dias) < ITINERARY_CONFIG.MIN_DAYS:
             raise ValueError(
                 f"Roteiro muito curto: {len(dias)} dias "
@@ -283,12 +218,10 @@ class ResponseProcessor:
                 f"(máximo recomendado: {ITINERARY_CONFIG.MAX_DAYS})"
             )
         
-        # Validar e corrigir landmarks
         for dia in dias:
             if "landmark" not in dia or not dia["landmark"]:
                 dia_num = dia.get("dia", 0)
                 
-                # Determinar landmark padrão baseado no dia
                 if dia_num == 1:
                     landmark = f"{cidade} cityscape"
                 elif dia_num == len(dias):
@@ -317,13 +250,6 @@ class ItineraryGenerator:
         openai_client: Optional[OpenAI] = None,
         config = ITINERARY_CONFIG
     ):
-        """
-        Inicializa o gerador.
-        
-        Args:
-            openai_client: Cliente OpenAI (opcional)
-            config: Configurações (padrão: ITINERARY_CONFIG)
-        """
         self.config = config
         self.ai = openai_client
         
@@ -345,19 +271,8 @@ class ItineraryGenerator:
             return None
     
     def generate(self, trip_data: dict) -> List[dict]:
-        """
-        Gera roteiro completo para a viagem.
+        """Gera roteiro completo para a viagem"""
         
-        Args:
-            trip_data: Dados extraídos da viagem
-        
-        Returns:
-            Lista de dias do roteiro
-        
-        Raises:
-            RuntimeError: Se OpenAI não disponível
-            ValueError: Se dados inválidos
-        """
         if not self.ai:
             raise RuntimeError("OpenAI não disponível")
         
@@ -436,15 +351,7 @@ def _get_generator() -> ItineraryGenerator:
 
 
 def generate_itinerary(trip_data: dict) -> list[dict]:
-    """
-    Wrapper para compatibilidade com código legado.
-    
-    Args:
-        trip_data: Dados da viagem
-    
-    Returns:
-        Lista de dias do roteiro
-    """
+    """Wrapper para compatibilidade com código legado"""
     try:
         generator = _get_generator()
         return generator.generate(trip_data)
@@ -461,8 +368,7 @@ if __name__ == "__main__":
     test_data = {
         "periodo": {"inicio": "30/01", "fim": "06/02"},
         "voos": [
-            {"origem": "VDC", "destino": "Buenos Aires (AEP)", "horario_chegada": "17:00", "data": "30/01"},
-            {"origem": "Buenos Aires (EZE)", "destino": "VDC", "horario_saida": "02:30", "data": "06/02"}
+            {"origem": "VDC", "destino": "Buenos Aires (AEP)", "horario_chegada": "17:00", "data": "30/01"}
         ],
         "hoteis": [
             {"cidade": "Buenos Aires", "nome": "Waldorf Hotel", "noites": 7}
@@ -471,20 +377,12 @@ if __name__ == "__main__":
     }
     
     logger.info("=" * 70)
-    logger.info("🧪 TESTE COM ARQUITETURA REFATORADA")
+    logger.info("🧪 TESTE COM PROMPTS EXTERNOS")
     logger.info("=" * 70)
     
-    # Teste com função legacy
-    logger.info("\n1️⃣ Teste com função legacy (compatibilidade):")
     roteiro = generate_itinerary(test_data)
     if roteiro:
-        logger.info(f"✅ {len(roteiro)} dias - Landmarks: {[d.get('landmark') for d in roteiro]}")
-    
-    # Teste com classe direta
-    logger.info("\n2️⃣ Teste com ItineraryGenerator direto:")
-    generator = ItineraryGenerator()
-    roteiro2 = generator.generate(test_data)
-    if roteiro2:
-        logger.info(f"✅ {len(roteiro2)} dias gerados")
+        logger.info(f"✅ {len(roteiro)} dias gerados")
+        logger.info(f"Landmarks: {[d.get('landmark') for d in roteiro]}")
     
     logger.info("\n" + "=" * 70)
