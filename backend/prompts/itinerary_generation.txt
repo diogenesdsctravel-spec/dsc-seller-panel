@@ -1,0 +1,63 @@
+Crie um roteiro dia-a-dia COMPLETO para esta viagem a {cidade}:
+
+PERÍODO: {inicio} a {fim}
+
+VOOS:
+{voos_json}
+
+HOTÉIS:
+{hoteis_json}
+
+PASSEIOS INCLUÍDOS:
+{passeios_json}
+
+REGRAS OBRIGATÓRIAS:
+
+1. CAMPO "landmark" É OBRIGATÓRIO EM CADA DIA:
+   - O campo "landmark" define qual FOTO será exibida naquele dia
+   - Use APENAS o nome do lugar, sem cidade ou país
+   - Dia 1 (chegada): use "{cidade} cityscape"
+   - Último dia (partida): use "{cidade} airport"
+
+2. DIA DE CHEGADA (Dia 1):
+   - Título: "Chegada a {cidade}"
+   - landmark: "{cidade} cityscape"
+   - Horário: Mostrar horário de chegada do voo
+   - Descrição: 2-3 parágrafos sobre chegada, transfer, check-in e primeira noite
+   - Transfer: "{transfer_status}"
+   - Dica: Uma dica prática sobre o bairro do hotel
+
+3. DIAS INTERMEDIÁRIOS (Dia 2 até penúltimo):
+   - Título: Nome de atividade/bairro
+   - landmark: Nome DO LOCAL específico visitado
+   - Descrição: 2-3 parágrafos com sugestões de manhã, tarde e noite
+   - VARIE os bairros/locais a cada dia
+   - Se tem passeio incluído: mencionar "✓ [Nome do passeio] incluído"
+   - Dica: Dica sobre restaurantes, horários, transporte
+
+4. DIA DE PARTIDA (Último dia):
+   - Título: "Retorno"
+   - landmark: "{cidade} airport"
+   - Horário: Mostrar horário do voo de volta
+   - Descrição: Check-out, transfer ao aeroporto, despedida
+   - Transfer: "{transfer_status}"
+   - Dica: Dica sobre check-in antecipado
+
+LANDMARKS VÁLIDOS PARA {cidade}:
+{landmarks_texto}
+
+FORMATO JSON (retorne APENAS JSON array limpo, sem ```json):
+[
+  {{
+    "dia": 1,
+    "data": "{inicio}",
+    "titulo": "Chegada a {cidade}",
+    "landmark": "{cidade} cityscape",
+    "horario": "Chegada às XX:XX",
+    "descricao": "...",
+    "transfer": "{transfer_status}",
+    "dica": "..."
+  }}
+]
+
+IMPORTANTE: CADA DIA DEVE TER UM LANDMARK DIFERENTE para garantir variedade visual nas fotos!
