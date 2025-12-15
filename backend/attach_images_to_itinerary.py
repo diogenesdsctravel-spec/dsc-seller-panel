@@ -34,6 +34,9 @@ def anexar_imagens_aos_dias(
     logger.info(f"📸 Buscando fotos para {len(dias)} dias em {cidade}...")
     
     for idx, dia in enumerate(dias, start=1):
+        # Remover campo antigo se existir
+        dia.pop("imagem_dia", None)
+        
         query_text = dia.get(chave_query) or dia.get("titulo") or dia.get("nome") or ""
         query_text = str(query_text).strip()
         

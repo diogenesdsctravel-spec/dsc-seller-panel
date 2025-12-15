@@ -246,18 +246,8 @@ FORMATO JSON (retorne APENAS JSON, sem texto adicional):
                 if landmark and cidade:
                     print(f"  Dia {dia.get('dia')}: {landmark}")
 
-                    # Buscar foto curada com matching semântico
-                    foto = buscar_imagem(cidade, landmark)
-
-                    if foto:
-                        dia["imagem_dia"] = foto
-                        print("    💎 Foto curada encontrada")
-                    else:
-                        print("    ⚠️ Sem foto curada, usando fallback")
-                        dia["imagem_dia"] = (
-                            "https://images.unsplash.com/"
-                            "photo-1488646953014-85cb44e25828?w=1200"
-                        )
+                    # Imagens serão anexadas depois por attach_images_to_itinerary
+                    pass
 
             print(f"✅ Fotos processadas para {len(roteiro)} dias")
 

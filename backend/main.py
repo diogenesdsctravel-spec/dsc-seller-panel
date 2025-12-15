@@ -179,8 +179,9 @@ def get_trip(trip_id: str):
 
 @app.post("/extract/{trip_id}")
 async def extract_trip_data(trip_id: str):
-    """Extrai dados dos arquivos enviados usando IA."""
+    """Extrai dados dos arquivos enviados usando IA e anexa imagens únicas."""
     from extract_with_ai import extract_travel_data
+    from attach_images_to_itinerary import anexar_imagens_aos_dias
 
     trip_folder = UPLOADS_DIR / trip_id
 
@@ -188,8 +189,28 @@ async def extract_trip_data(trip_id: str):
         raise HTTPException(status_code=404, detail=f"Trip {trip_id} não encontrado")
 
     try:
+        # 1. Extrair dados com IA
         extracted_data = extract_travel_data(trip_folder)
+        
+        # 2. Anexar imagens únicas aos dias (se houver roteiro)
+        if "dias" in extracted_data and extracted_data["dias"]:
+            # Extrair cidade principal
+            cidade = None
+            if "destinos" in extracted_data and extracted_data["destinos"]:
+                cidade = extracted_data["destinos"][0]
+            elif "destinations" in extracted_data and extracted_data["destinations"]:
+                cidade = extracted_data["destinations"][0]
+            
+            if cidade:
+                print(f"📸 Anexando imagens únicas para {cidade}...")
+                extracted_data["dias"] = anexar_imagens_aos_dias(
+                    dias=extracted_data["dias"],
+                    cidade=cidade,
+                    chave_query="landmark"
+                )
+                print(f"✅ Imagens anexadas com sucesso!")
 
+        # 3. Salvar JSON final
         extracao_file = EXTRACAO_DIR / f"{trip_id}.json"
         with extracao_file.open("w", encoding="utf-8") as f:
             json.dump(extracted_data, f, ensure_ascii=False, indent=2)
@@ -197,7 +218,7 @@ async def extract_trip_data(trip_id: str):
         return {
             "trip_id": trip_id,
             "status": "extracted",
-            "message": "Dados extraídos com sucesso",
+            "message": "Dados extraídos com sucesso e imagens anexadas",
         }
 
     except Exception as e:
